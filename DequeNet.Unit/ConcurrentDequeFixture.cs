@@ -7,7 +7,7 @@ using Xunit;
 
 namespace DequeNet.Unit
 {
-    public class ConcurrentDequeFixture
+    public partial class ConcurrentDequeFixture
     {
         [Fact]
         public void DequeHasNoItemsByDefault()
@@ -84,6 +84,25 @@ namespace DequeNet.Unit
             var anchor = deque._anchor;
             var newNode = anchor.Right;
             Assert.Equal(prevValue, newNode.Left.Value);
+        }
+
+        [Fact]
+        public void PushRightStabilizesDeque()
+        {
+            //Arrange
+            const int prevValue = 1;
+            const int value = 5;
+            var deque = new ConcurrentDeque<int>();
+            deque.PushRight(prevValue);
+
+            //Act
+            deque.PushRight(value);
+
+            //Assert
+            var anchor = deque._anchor;
+            var newNode = anchor.Right;
+            Assert.Same(newNode, newNode.Left.Right);
+            Assert.Equal(ConcurrentDeque<int>.DequeStatus.Stable, anchor.Status);
         }
     }
 }

@@ -84,9 +84,55 @@ namespace DequeNet
 
         }
 
+        /// <summary>
+        /// Stabilizes the deque when in <see cref="DequeStatus.RPush"/> status.
+        /// </summary>
+        /// <remarks>
+        /// Stabilization is done in two steps:
+        /// (1) update the previous rightmost node's right pointer to point to the new rightmost node;
+        /// (2) update the anchor, changing the status to <see cref="DequeStatus.Stable"/>.
+        /// </remarks>
+        /// <param name="anchor"></param>
         private void StabilizeRight(Anchor anchor)
         {
-            
+            //quick check to see if the anchor has been updated by another thread
+            if (_anchor != anchor)
+                return;
+
+            //grab a reference to the new node
+            var newNode = anchor.Right;
+
+            //grab a reference to the previous rightmost node and its right pointer
+            var prev = newNode.Left;
+            var prevNext = prev.Right;
+
+            //if the previous rightmost node doesn't point to the new rightmost node, we need to update it
+            if (prevNext != newNode)
+            {
+                /**
+                 * Quick check to see if the anchor has been updated by another thread.
+                 * If it has been updated, we can't touch the prev node.
+                 * Some other thread may have popped the new node, pushed another node and stabilized the deque.
+                 * If that's the case, then prev node's right pointer is pointing to the other node.
+                 */
+                if (_anchor != anchor)
+                    return;
+
+                //try to make the previous rightmost node point to the next node.
+                //CAS failure means that another thread already stabilized the deque.
+                if (Interlocked.CompareExchange(ref prev.Right, newNode, prevNext) != prevNext)
+                    return;
+            }
+
+            /**
+             * Try to mark the anchor as stable.
+             * This step is done outside of the previous "if" block:
+             *   even though another thread may have already updated prev's right pointer,
+             *   this thread might still preempt the other and perform the second step (i.e., update the anchor).
+             */
+            var newAnchor = new Anchor(anchor.Left, anchor.Right, DequeStatus.Stable);
+            Interlocked.CompareExchange(ref _anchor, newAnchor, anchor);
+
         }
 
         internal class Anchor
