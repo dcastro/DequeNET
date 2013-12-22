@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -63,7 +64,42 @@ namespace DequeNet
 
         public bool TryPopRight(out T item)
         {
-            throw new NotImplementedException();
+            Anchor anchor;
+            while (true)
+            {
+                anchor = _anchor;
+                
+                if (anchor.Right == null)
+                {
+                    //return false if the deque is empty
+                    item = default(T);
+                    return false;
+                }
+                if (anchor.Right == anchor.Left)
+                {
+                    //update both pointers if the deque has only one node
+                    var newAnchor = new Anchor(null, null, DequeStatus.Stable);
+                    if (Interlocked.CompareExchange(ref _anchor, newAnchor, anchor) == anchor)
+                        break;
+                }
+                else if (anchor.Status == DequeStatus.Stable)
+                {
+                    //update right pointer if deque has > 1 node
+                    var prev = anchor.Right.Left;
+                    var newAnchor = new Anchor(anchor.Left, prev, anchor.Status);
+                    if (Interlocked.CompareExchange(ref _anchor, newAnchor, anchor) == anchor)
+                        break;
+                }
+                else
+                {
+                    //if the deque is unstable,
+                    //attempt to bring it to a stable state before trying to insert the node.
+                    Stabilize(anchor);
+                }
+            }
+
+            item = anchor.Right.Value;
+            return true;
         }
 
         public bool TryPopLeft(out T item)

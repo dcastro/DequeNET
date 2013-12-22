@@ -104,5 +104,87 @@ namespace DequeNet.Unit
             Assert.Same(newNode, newNode.Left.Right);
             Assert.Equal(ConcurrentDeque<int>.DequeStatus.Stable, anchor.Status);
         }
+
+        [Fact]
+        public void TryPopRightFailsOnEmptyDeque()
+        {
+            //Arrange
+            var deque = new ConcurrentDeque<int>();
+            
+            //Act & Assert
+            int item;
+            Assert.False(deque.TryPopRight(out item));
+            Assert.Equal(item, default(int));
+        }
+
+        [Fact]
+        public void TryPopReturnsTheLastRemainingItem()
+        {
+            //Arrange
+            var deque = new ConcurrentDeque<int>();
+            deque.PushRight(1);
+
+            //Act & Assert
+            int item;
+            Assert.True(deque.TryPopRight(out item));
+            Assert.Equal(item, 1);
+
+            int nodesCount = 0;
+            ForEachNode(deque, n => nodesCount++);
+            Assert.Equal(0, nodesCount);
+        }
+
+        [Fact]
+        public void TryPopReturnsTheRightmostItem()
+        {
+            //Arrange
+            var deque = new ConcurrentDeque<int>();
+            deque.PushRight(1);
+            deque.PushRight(3);
+            deque.PushRight(5);
+
+            //Act & Assert
+            int item;
+            Assert.True(deque.TryPopRight(out item));
+            Assert.Equal(item, 5);
+
+            int nodesCount = 0;
+            ForEachNode(deque, n => nodesCount++);
+            Assert.Equal(2, nodesCount);
+        }
+
+        private void ForEachNode<T>(ConcurrentDeque<T> deque, Action<ConcurrentDeque<T>.Node> action)
+        {
+            var anchor = deque._anchor;
+            var current = anchor.Left;
+            var last = anchor.Right;
+
+            if (current == null)
+                return;
+
+            while (current != last)
+            {
+                action(current);
+                current = current.Right;
+            }
+            action(last);
+        }
+
+        private void ReverseForEachNode<T>(ConcurrentDeque<T> deque, Action<ConcurrentDeque<T>.Node> action)
+        {
+            var anchor = deque._anchor;
+            var current = anchor.Right;
+            var first = anchor.Left;
+
+            if (current == null)
+                return;
+
+            while (current != first)
+            {
+                action(current);
+                current = current.Left;
+            }
+            action(first);
+        }
     }
 }

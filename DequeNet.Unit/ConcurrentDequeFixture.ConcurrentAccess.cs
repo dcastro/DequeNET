@@ -94,6 +94,7 @@ namespace DequeNet.Unit
             ReverseForEachNode(deque, node => nodesCount++);
 
             Assert.Equal(pushCount, nodesCount);
+            Debug.WriteLine(pushCount);
         }
 
         [Fact]
@@ -141,32 +142,45 @@ namespace DequeNet.Unit
             Assert.Equal(sum, actualSum);
         }
 
-        private void ForEachNode<T>(ConcurrentDeque<T> deque, Action<ConcurrentDeque<T>.Node> action)
+        [Fact]
+        public void TryPopRightIsAtomic()
         {
-            var anchor = deque._anchor;
-            var current = anchor.Left;
-            var last = anchor.Right;
+            //Arrange
+            const int initialCount = 5000000;
+            const double stopAt = initialCount*0.9;
+            const int taskCount = 20;
 
-            while (current != last)
+            int popCount = 0;
+            var deque = new ConcurrentDeque<int>();
+
+            for (int i = 0; i < initialCount; i++)
+                deque.PushRight(i);
+
+            Action popRightAction = () =>
+                                    {
+                                        while (popCount <= stopAt)
+                                        {
+                                            int i;
+                                            Assert.True(deque.TryPopRight(out i));
+                                            Interlocked.Increment(ref popCount);
+                                        }
+                                    };
+            //Act
+            //start concurrent tasks
+            var tasks = new Task[taskCount];
+            for (int i = 0; i < taskCount; i++)
             {
-                action(current);
-                current = current.Right;
+                tasks[i] = Task.Run(popRightAction);
             }
-            action(last);
-        }
 
-        private void ReverseForEachNode<T>(ConcurrentDeque<T> deque, Action<ConcurrentDeque<T>.Node> action)
-        {
-            var anchor = deque._anchor;
-            var current = anchor.Right;
-            var first = anchor.Left;
+            //wait and stop tasks
+            Task.WaitAll(tasks);
 
-            while (current != first)
-            {
-                action(current);
-                current = current.Left;
-            }
-            action(first);
+            //Assert
+            int remainingNodes = 0;
+            ForEachNode(deque, n => remainingNodes++);
+
+            Assert.Equal(initialCount - popCount, remainingNodes);
         }
         // ReSharper enable AccessToModifiedClosure
     }
