@@ -10,7 +10,11 @@ namespace DequeNet
 {
     public class ConcurrentDeque<T> : IConcurrentDeque<T>
     {
-        internal Anchor _anchor;
+        //Disable "a reference to a volatile field will not be treated as volatile" warnings.
+        //As per the MSDN documentation: "There are exceptions to this, such as when calling an interlocked API".
+        #pragma warning disable 420
+
+        internal volatile Anchor _anchor;
 
         public ConcurrentDeque()
         {
@@ -200,8 +204,8 @@ namespace DequeNet
 
         internal class Node
         {
-            internal Node Left;
-            internal Node Right;
+            internal volatile Node Left;
+            internal volatile Node Right;
             internal readonly T Value;
 
             internal Node(T value)
@@ -209,5 +213,7 @@ namespace DequeNet
                 Value = value;
             }
         }
+
+        #pragma warning restore 420
     }
 }
