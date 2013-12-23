@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Xunit;
+using DequeNet.Test.Common;
 
 namespace DequeNet.Unit
 {
@@ -129,8 +129,7 @@ namespace DequeNet.Unit
             Assert.True(deque.TryPopRight(out item));
             Assert.Equal(item, 1);
 
-            int nodesCount = 0;
-            ForEachNode(deque, n => nodesCount++);
+            long nodesCount = deque.GetNodes().LongCount();
             Assert.Equal(0, nodesCount);
         }
 
@@ -148,43 +147,8 @@ namespace DequeNet.Unit
             Assert.True(deque.TryPopRight(out item));
             Assert.Equal(item, 5);
 
-            int nodesCount = 0;
-            ForEachNode(deque, n => nodesCount++);
+            long nodesCount = deque.GetNodes().LongCount();
             Assert.Equal(2, nodesCount);
-        }
-
-        private void ForEachNode<T>(ConcurrentDeque<T> deque, Action<ConcurrentDeque<T>.Node> action)
-        {
-            var anchor = deque._anchor;
-            var current = anchor._left;
-            var last = anchor._right;
-
-            if (current == null)
-                return;
-
-            while (current != last)
-            {
-                action(current);
-                current = current._right;
-            }
-            action(last);
-        }
-
-        private void ReverseForEachNode<T>(ConcurrentDeque<T> deque, Action<ConcurrentDeque<T>.Node> action)
-        {
-            var anchor = deque._anchor;
-            var current = anchor._right;
-            var first = anchor._left;
-
-            if (current == null)
-                return;
-
-            while (current != first)
-            {
-                action(current);
-                current = current._left;
-            }
-            action(first);
         }
     }
 }

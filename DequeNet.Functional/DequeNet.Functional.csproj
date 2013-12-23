@@ -53,6 +53,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DequeNet.Test.Common\DequeNet.Test.Common.csproj">
+      <Project>{b5f779e4-a4c3-408c-bcd1-a06ab54a3595}</Project>
+      <Name>DequeNet.Test.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DequeNet\DequeNet.csproj">
       <Project>{2276c08f-9c85-4713-a8d9-5580eff5b853}</Project>
       <Name>DequeNet</Name>

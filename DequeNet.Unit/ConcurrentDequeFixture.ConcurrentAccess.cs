@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DequeNet.Test.Common;
 using Xunit;
 using Xunit.Extensions;
 
@@ -12,22 +13,24 @@ namespace DequeNet.Unit
 {
     public partial class ConcurrentDequeFixture
     {
+        private const int ThreadCount = 20;
+        private const int RunningTime = 3000;
+
         // ReSharper disable AccessToModifiedClosure
         [Fact]
         public void ConcurrentPushRightMaintainsRightPointersIntegrity()
         {
             //Arrange
             long pushCount = 0;
-            bool shouldPush = true;
-            const int taskCount = 20;
-            const int runningTime = 3000;
+            bool cancelled = false;
+
 
             var deque = new ConcurrentDeque<int>();
 
             //keep adding items to the deque
-            Action pushRightAction = () =>
+            ThreadStart pushRight = () =>
                                      {
-                                         while (shouldPush)
+                                         while (!cancelled)
                                          {
                                              deque.PushRight(0);
                                              Interlocked.Increment(ref pushCount);
@@ -35,23 +38,12 @@ namespace DequeNet.Unit
                                      };
 
             //Act
-            //start concurrent tasks
-            var tasks = new Task[taskCount];
-            for (int i = 0; i < taskCount; i++)
-            {
-                tasks[i] = Task.Run(pushRightAction);
-            }
-
-            //wait and stop tasks
-            Thread.Sleep(runningTime);
-            shouldPush = false;
-            Task.WaitAll(tasks);
+            pushRight.RunInParallel(() => cancelled = true, ThreadCount, RunningTime);
 
             //Assert
             //traverse the deque from left to right
-            long nodesCount = 0;
-            ForEachNode(deque, node => nodesCount++);
-
+            long nodesCount = deque.GetNodes().LongCount();
+            Assert.True(nodesCount > 0);
             Assert.Equal(pushCount, nodesCount);
         }
 
@@ -60,16 +52,14 @@ namespace DequeNet.Unit
         {
             //Arrange
             long pushCount = 0;
-            bool shouldPush = true;
-            const int taskCount = 20;
-            const int runningTime = 3000;
+            bool cancelled = false;
 
             var deque = new ConcurrentDeque<int>();
 
             //keep adding items to the deque
-            Action pushRightAction = () =>
+            ThreadStart pushRight = () =>
             {
-                while (shouldPush)
+                while (!cancelled)
                 {
                     deque.PushRight(0);
                     Interlocked.Increment(ref pushCount);
@@ -77,23 +67,12 @@ namespace DequeNet.Unit
             };
 
             //Act
-            //start concurrent tasks
-            var tasks = new Task[taskCount];
-            for (int i = 0; i < taskCount; i++)
-            {
-                tasks[i] = Task.Run(pushRightAction);
-            }
-
-            //wait and stop tasks
-            Thread.Sleep(runningTime);
-            shouldPush = false;
-            Task.WaitAll(tasks);
+            pushRight.RunInParallel(() => cancelled = true, ThreadCount, RunningTime);
 
             //Assert
             //traverse the deque from right to left
-            long nodesCount = 0;
-            ReverseForEachNode(deque, node => nodesCount++);
-
+            long nodesCount = deque.GetNodesReverse().LongCount();
+            Assert.True(nodesCount > 0);
             Assert.Equal(pushCount, nodesCount);
         }
 
@@ -102,18 +81,16 @@ namespace DequeNet.Unit
         {
             //Arrange
             long sum = 0;
-            bool shouldPush = true;
-            const int taskCount = 20;
-            const int runningTime = 3000;
+            bool cancelled = false;
 
             var deque = new ConcurrentDeque<int>();
 
             //keep adding items to the deque
-            Action pushRightAction = () =>
+            ThreadStart pushRight = () =>
             {
                 Random rnd = new Random();
 
-                while (shouldPush)
+                while (!cancelled)
                 {
                     int val = rnd.Next(1, 11);
                     deque.PushRight(val);
@@ -122,23 +99,12 @@ namespace DequeNet.Unit
             };
 
             //Act
-            //start concurrent tasks
-            var tasks = new Task[taskCount];
-            for (int i = 0; i < taskCount; i++)
-            {
-                tasks[i] = Task.Run(pushRightAction);
-            }
-
-            //wait and stop tasks
-            Thread.Sleep(runningTime);
-            shouldPush = false;
-            Task.WaitAll(tasks);
+            pushRight.RunInParallel(() => cancelled = true, ThreadCount, RunningTime);
 
             //Assert
-            //traverse the deque from right to left
-            long actualSum = 0;
-            ReverseForEachNode(deque, node => actualSum += node._value);
-            
+            //traverse the deque from left to right
+            long actualSum = deque.GetNodes().Sum(n => n._value);
+            Assert.True(actualSum > 0);
             Assert.Equal(sum, actualSum);
         }
 
@@ -148,7 +114,6 @@ namespace DequeNet.Unit
             //Arrange
             const int initialCount = 5000000;
             const double stopAt = initialCount*0.9;
-            const int taskCount = 20;
 
             int popCount = 0;
             var deque = new ConcurrentDeque<int>();
@@ -156,7 +121,7 @@ namespace DequeNet.Unit
             for (int i = 0; i < initialCount; i++)
                 deque.PushRight(i);
 
-            Action popRightAction = () =>
+            ThreadStart popRight = () =>
                                     {
                                         while (popCount <= stopAt)
                                         {
@@ -166,20 +131,11 @@ namespace DequeNet.Unit
                                         }
                                     };
             //Act
-            //start concurrent tasks
-            var tasks = new Task[taskCount];
-            for (int i = 0; i < taskCount; i++)
-            {
-                tasks[i] = Task.Run(popRightAction);
-            }
-
-            //wait and stop tasks
-            Task.WaitAll(tasks);
+            popRight.RunInParallel(ThreadCount, RunningTime);
 
             //Assert
-            int remainingNodes = 0;
-            ForEachNode(deque, n => remainingNodes++);
-
+            int remainingNodes = deque.GetNodes().Count();
+            Assert.True(remainingNodes > 0);
             Assert.Equal(initialCount - popCount, remainingNodes);
         }
         // ReSharper enable AccessToModifiedClosure

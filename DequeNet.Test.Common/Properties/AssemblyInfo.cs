@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DequeNet")]
+[assembly: AssemblyTitle("DequeNet.Test.Common")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("DequeNet")]
+[assembly: AssemblyProduct("DequeNet.Test.Common")]
 [assembly: AssemblyCopyright("Copyright ©  2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("105b6e42-970c-4583-8491-14b1e127a913")]
+[assembly: Guid("25aa8e5a-2ef9-4ea8-8686-93cbe20e3261")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -35,6 +35,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
-[assembly: InternalsVisibleTo("DequeNet.Unit")]
 [assembly: InternalsVisibleTo("DequeNet.Functional")]
-[assembly: InternalsVisibleTo("DequeNet.Test.Common")]
+[assembly: InternalsVisibleTo("DequeNet.Unit")]
+

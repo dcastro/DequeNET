@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DequeNet", "DequeNet\DequeNet.csproj", "{2276C08F-9C85-4713-A8D9-5580EFF5B853}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DequeNet.Unit", "DequeNet.Unit\DequeNet.Unit.csproj", "{2FAA47E4-EB30-4881-B09A-FA772F510036}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DequeNet.Functional", "DequeNet.Functional\DequeNet.Functional.csproj", "{AB5C541A-B129-49A6-AF4A-65DB6C6B257D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DequeNet.Test.Common", "DequeNet.Test.Common\DequeNet.Test.Common.csproj", "{B5F779E4-A4C3-408C-BCD1-A06AB54A3595}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +27,10 @@ Global
 		{AB5C541A-B129-49A6-AF4A-65DB6C6B257D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB5C541A-B129-49A6-AF4A-65DB6C6B257D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB5C541A-B129-49A6-AF4A-65DB6C6B257D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5F779E4-A4C3-408C-BCD1-A06AB54A3595}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5F779E4-A4C3-408C-BCD1-A06AB54A3595}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5F779E4-A4C3-408C-BCD1-A06AB54A3595}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5F779E4-A4C3-408C-BCD1-A06AB54A3595}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

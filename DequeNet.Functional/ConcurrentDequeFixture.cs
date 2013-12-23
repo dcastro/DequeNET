@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Xunit;
+using DequeNet.Test.Common;
 
 namespace DequeNet.Functional
 {
@@ -19,7 +20,6 @@ namespace DequeNet.Functional
             //Arrange
             const int threadCount = 20;
             const int runningTime = 3000;
-            const int threadTimeout = 500;
 
             var deque = new ConcurrentDeque<int>();
             long sum = 0;
@@ -50,41 +50,11 @@ namespace DequeNet.Functional
                             };
 
             //Act
-            //start concurrent threads
-            var threads = new Thread[threadCount];
-            for (int i = 0; i < threadCount; i++)
-            {
-                threads[i] = new Thread(action);
-                threads[i].Start();
-            }
-
-            Thread.Sleep(runningTime);
-            cancelled = true;
-            for (int i = 0; i < threadCount; i++)
-            {
-                Assert.True(threads[i].Join(threadTimeout));
-            }
+            action.RunInParallel(() => cancelled = true, threadCount, runningTime);
 
             //Assert
-            long actualSum = GetNodes(deque).Sum(n => (long) n._value);
+            long actualSum = deque.GetNodes().Sum(n => (long) n._value);
             Assert.Equal(sum, actualSum);
-        }
-
-        private IEnumerable<ConcurrentDeque<T>.Node> GetNodes<T>(ConcurrentDeque<T> deque)
-        {
-            var anchor = deque._anchor;
-            var current = anchor._left;
-            var last = anchor._right;
-
-            if (current == null)
-                yield break;
-
-            while (current != last)
-            {
-                yield return current;
-                current = current._right;
-            }
-            yield return last;
         }
     }
 }
