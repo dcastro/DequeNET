@@ -63,9 +63,9 @@ namespace DequeNet.Unit
 
             //Assert
             var anchor = deque._anchor;
-            var newNode = anchor._right;
-            Assert.NotNull(newNode);
-            Assert.Equal(value, newNode._value);
+            var rightmostNode = anchor._right;
+            Assert.NotNull(rightmostNode);
+            Assert.Equal(value, rightmostNode._value);
         }
 
         [Fact]
@@ -149,6 +149,60 @@ namespace DequeNet.Unit
 
             long nodesCount = deque.GetNodes().LongCount();
             Assert.Equal(2, nodesCount);
+        }
+
+        [Fact]
+        public void PushLeftAppendsNodeToEmptyList()
+        {
+            //Arrange
+            const int value = 5;
+            var deque = new ConcurrentDeque<int>();
+
+            //Act
+            deque.PushLeft(value);
+
+            //Assert
+            var anchor = deque._anchor;
+            Assert.NotNull(anchor._right);
+            Assert.NotNull(anchor._left);
+            Assert.Same(anchor._left, anchor._right);
+            Assert.Equal(value, anchor._left._value);
+        }
+
+        [Fact]
+        public void PushLeftAppendsNodeToNonEmptyList()
+        {
+            //Arrange
+            const int value = 5;
+            var deque = new ConcurrentDeque<int>();
+            deque.PushRight(1);
+
+            //Act
+            deque.PushLeft(value);
+
+            //Assert
+            var anchor = deque._anchor;
+            var leftmostNode = anchor._left;
+            Assert.NotNull(leftmostNode);
+            Assert.Equal(value, leftmostNode._value);
+        }
+
+        [Fact]
+        public void PushLeftKeepsReferenceToPreviousLeftNode()
+        {
+            //Arrange
+            const int prevValue = 1;
+            const int value = 5;
+            var deque = new ConcurrentDeque<int>();
+            deque.PushLeft(prevValue);
+
+            //Act
+            deque.PushLeft(value);
+
+            //Assert
+            var anchor = deque._anchor;
+            var newNode = anchor._left;
+            Assert.Equal(prevValue, newNode._right._value);
         }
     }
 }

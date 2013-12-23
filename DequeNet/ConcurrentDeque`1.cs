@@ -14,6 +14,7 @@ namespace DequeNet
         //As per the MSDN documentation: "There are exceptions to this, such as when calling an interlocked API".
         #pragma warning disable 420
 
+        // ReSharper disable InconsistentNaming
         internal volatile Anchor _anchor;
 
         public ConcurrentDeque()
@@ -40,9 +41,11 @@ namespace DequeNet
                 }
                 else if (anchor._status == DequeStatus.Stable)
                 {
-                    //update right pointer
-                    //and change the status to RPush
+                    //make new node point to the rightmost node
                     newNode._left = anchor._right;
+
+                    //update the anchor's right pointer
+                    //and change the status to RPush
                     var newAnchor = new Anchor(anchor._left, newNode, DequeStatus.RPush);
 
                     if (Interlocked.CompareExchange(ref _anchor, newAnchor, anchor) == anchor)
@@ -63,7 +66,44 @@ namespace DequeNet
 
         public void PushLeft(T item)
         {
-            throw new NotImplementedException();
+            var newNode = new Node(item);
+
+            while (true)
+            {
+                var anchor = _anchor;
+
+                //If the deque is empty
+                if (anchor._left == null)
+                {
+                    //update both pointers to point to the new node
+                    var newAnchor = new Anchor(newNode, newNode, anchor._status);
+
+                    if (Interlocked.CompareExchange(ref _anchor, newAnchor, anchor) == anchor)
+                        return;
+                }
+                else if (anchor._status == DequeStatus.Stable)
+                {
+                    //make new node point to the leftmost node
+                    newNode._right = anchor._left;
+
+                    //update anchor's left pointer
+                    //and change the status to LPush
+                    var newAnchor = new Anchor(newNode, anchor._right, DequeStatus.LPush);
+
+                    if (Interlocked.CompareExchange(ref _anchor, newAnchor, anchor) == anchor)
+                    {
+                        //stabilize deque
+                        StabilizeLeft(newAnchor);
+                        return;
+                    }
+                }
+                else
+                {
+                    //if the deque is unstable,
+                    //attempt to bring it to a stable state before trying to insert the node.
+                    Stabilize(anchor);
+                }
+            }
         }
 
         public bool TryPopRight(out T item)
@@ -215,5 +255,6 @@ namespace DequeNet
         }
 
         #pragma warning restore 420
+        // ReSharper restore InconsistentNaming
     }
 }
