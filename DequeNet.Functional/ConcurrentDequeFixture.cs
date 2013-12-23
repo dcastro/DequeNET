@@ -66,15 +66,15 @@ namespace DequeNet.Functional
             }
 
             //Assert
-            long actualSum = GetNodes(deque).Sum(n => (long) n.Value);
+            long actualSum = GetNodes(deque).Sum(n => (long) n._value);
             Assert.Equal(sum, actualSum);
         }
 
         private IEnumerable<ConcurrentDeque<T>.Node> GetNodes<T>(ConcurrentDeque<T> deque)
         {
             var anchor = deque._anchor;
-            var current = anchor.Left;
-            var last = anchor.Right;
+            var current = anchor._left;
+            var last = anchor._right;
 
             if (current == null)
                 yield break;
@@ -82,7 +82,7 @@ namespace DequeNet.Functional
             while (current != last)
             {
                 yield return current;
-                current = current.Right;
+                current = current._right;
             }
             yield return last;
         }

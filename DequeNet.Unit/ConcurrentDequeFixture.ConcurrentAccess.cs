@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Extensions;
 
 namespace DequeNet.Unit
 {
@@ -94,7 +95,6 @@ namespace DequeNet.Unit
             ReverseForEachNode(deque, node => nodesCount++);
 
             Assert.Equal(pushCount, nodesCount);
-            Debug.WriteLine(pushCount);
         }
 
         [Fact]
@@ -137,7 +137,7 @@ namespace DequeNet.Unit
             //Assert
             //traverse the deque from right to left
             long actualSum = 0;
-            ReverseForEachNode(deque, node => actualSum += node.Value);
+            ReverseForEachNode(deque, node => actualSum += node._value);
             
             Assert.Equal(sum, actualSum);
         }

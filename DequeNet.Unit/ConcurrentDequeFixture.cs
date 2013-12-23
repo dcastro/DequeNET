@@ -17,8 +17,8 @@ namespace DequeNet.Unit
 
             //Assert
             var anchor = deque._anchor;
-            Assert.Null(anchor.Left);
-            Assert.Null(anchor.Right);
+            Assert.Null(anchor._left);
+            Assert.Null(anchor._right);
         }
 
         [Fact]
@@ -29,7 +29,7 @@ namespace DequeNet.Unit
 
             //Assert
             var anchor = deque._anchor;
-            Assert.Equal(ConcurrentDeque<int>.DequeStatus.Stable, anchor.Status);
+            Assert.Equal(ConcurrentDeque<int>.DequeStatus.Stable, anchor._status);
         }
 
         [Fact]
@@ -44,10 +44,10 @@ namespace DequeNet.Unit
 
             //Assert
             var anchor = deque._anchor;
-            Assert.NotNull(anchor.Right);
-            Assert.NotNull(anchor.Left);
-            Assert.Same(anchor.Left, anchor.Right);
-            Assert.Equal(value, anchor.Right.Value);
+            Assert.NotNull(anchor._right);
+            Assert.NotNull(anchor._left);
+            Assert.Same(anchor._left, anchor._right);
+            Assert.Equal(value, anchor._right._value);
         }
 
         [Fact]
@@ -63,9 +63,9 @@ namespace DequeNet.Unit
 
             //Assert
             var anchor = deque._anchor;
-            var newNode = anchor.Right;
+            var newNode = anchor._right;
             Assert.NotNull(newNode);
-            Assert.Equal(value, newNode.Value);
+            Assert.Equal(value, newNode._value);
         }
 
         [Fact]
@@ -82,8 +82,8 @@ namespace DequeNet.Unit
 
             //Assert
             var anchor = deque._anchor;
-            var newNode = anchor.Right;
-            Assert.Equal(prevValue, newNode.Left.Value);
+            var newNode = anchor._right;
+            Assert.Equal(prevValue, newNode._left._value);
         }
 
         [Fact]
@@ -100,9 +100,9 @@ namespace DequeNet.Unit
 
             //Assert
             var anchor = deque._anchor;
-            var newNode = anchor.Right;
-            Assert.Same(newNode, newNode.Left.Right);
-            Assert.Equal(ConcurrentDeque<int>.DequeStatus.Stable, anchor.Status);
+            var newNode = anchor._right;
+            Assert.Same(newNode, newNode._left._right);
+            Assert.Equal(ConcurrentDeque<int>.DequeStatus.Stable, anchor._status);
         }
 
         [Fact]
@@ -156,8 +156,8 @@ namespace DequeNet.Unit
         private void ForEachNode<T>(ConcurrentDeque<T> deque, Action<ConcurrentDeque<T>.Node> action)
         {
             var anchor = deque._anchor;
-            var current = anchor.Left;
-            var last = anchor.Right;
+            var current = anchor._left;
+            var last = anchor._right;
 
             if (current == null)
                 return;
@@ -165,7 +165,7 @@ namespace DequeNet.Unit
             while (current != last)
             {
                 action(current);
-                current = current.Right;
+                current = current._right;
             }
             action(last);
         }
@@ -173,8 +173,8 @@ namespace DequeNet.Unit
         private void ReverseForEachNode<T>(ConcurrentDeque<T> deque, Action<ConcurrentDeque<T>.Node> action)
         {
             var anchor = deque._anchor;
-            var current = anchor.Right;
-            var first = anchor.Left;
+            var current = anchor._right;
+            var first = anchor._left;
 
             if (current == null)
                 return;
@@ -182,7 +182,7 @@ namespace DequeNet.Unit
             while (current != first)
             {
                 action(current);
-                current = current.Left;
+                current = current._left;
             }
             action(first);
         }

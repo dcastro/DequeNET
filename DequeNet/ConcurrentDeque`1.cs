@@ -30,20 +30,20 @@ namespace DequeNet
                 var anchor = _anchor;
 
                 //If the deque is empty
-                if (anchor.Right == null)
+                if (anchor._right == null)
                 {
                     //update both pointers to point to the new node
-                    var newAnchor = new Anchor(newNode, newNode, anchor.Status);
+                    var newAnchor = new Anchor(newNode, newNode, anchor._status);
 
                     if (Interlocked.CompareExchange(ref _anchor, newAnchor, anchor) == anchor)
                         return;
                 }
-                else if (anchor.Status == DequeStatus.Stable)
+                else if (anchor._status == DequeStatus.Stable)
                 {
                     //update right pointer
                     //and change the status to RPush
-                    newNode.Left = anchor.Right;
-                    var newAnchor = new Anchor(anchor.Left, newNode, DequeStatus.RPush);
+                    newNode._left = anchor._right;
+                    var newAnchor = new Anchor(anchor._left, newNode, DequeStatus.RPush);
 
                     if (Interlocked.CompareExchange(ref _anchor, newAnchor, anchor) == anchor)
                     {
@@ -73,24 +73,24 @@ namespace DequeNet
             {
                 anchor = _anchor;
                 
-                if (anchor.Right == null)
+                if (anchor._right == null)
                 {
                     //return false if the deque is empty
                     item = default(T);
                     return false;
                 }
-                if (anchor.Right == anchor.Left)
+                if (anchor._right == anchor._left)
                 {
                     //update both pointers if the deque has only one node
                     var newAnchor = new Anchor(null, null, DequeStatus.Stable);
                     if (Interlocked.CompareExchange(ref _anchor, newAnchor, anchor) == anchor)
                         break;
                 }
-                else if (anchor.Status == DequeStatus.Stable)
+                else if (anchor._status == DequeStatus.Stable)
                 {
                     //update right pointer if deque has > 1 node
-                    var prev = anchor.Right.Left;
-                    var newAnchor = new Anchor(anchor.Left, prev, anchor.Status);
+                    var prev = anchor._right._left;
+                    var newAnchor = new Anchor(anchor._left, prev, anchor._status);
                     if (Interlocked.CompareExchange(ref _anchor, newAnchor, anchor) == anchor)
                         break;
                 }
@@ -102,7 +102,7 @@ namespace DequeNet
                 }
             }
 
-            item = anchor.Right.Value;
+            item = anchor._right._value;
             return true;
         }
 
@@ -113,7 +113,7 @@ namespace DequeNet
 
         private void Stabilize(Anchor anchor)
         {
-            if(anchor.Status == DequeStatus.RPush)
+            if(anchor._status == DequeStatus.RPush)
                 StabilizeRight(anchor);
             else
                 StabilizeLeft(anchor);
@@ -140,11 +140,11 @@ namespace DequeNet
                 return;
 
             //grab a reference to the new node
-            var newNode = anchor.Right;
+            var newNode = anchor._right;
 
             //grab a reference to the previous rightmost node and its right pointer
-            var prev = newNode.Left;
-            var prevNext = prev.Right;
+            var prev = newNode._left;
+            var prevNext = prev._right;
 
             //if the previous rightmost node doesn't point to the new rightmost node, we need to update it
             if (prevNext != newNode)
@@ -160,7 +160,7 @@ namespace DequeNet
 
                 //try to make the previous rightmost node point to the next node.
                 //CAS failure means that another thread already stabilized the deque.
-                if (Interlocked.CompareExchange(ref prev.Right, newNode, prevNext) != prevNext)
+                if (Interlocked.CompareExchange(ref prev._right, newNode, prevNext) != prevNext)
                     return;
             }
 
@@ -170,28 +170,28 @@ namespace DequeNet
              *   even though another thread may have already updated prev's right pointer,
              *   this thread might still preempt the other and perform the second step (i.e., update the anchor).
              */
-            var newAnchor = new Anchor(anchor.Left, anchor.Right, DequeStatus.Stable);
+            var newAnchor = new Anchor(anchor._left, anchor._right, DequeStatus.Stable);
             Interlocked.CompareExchange(ref _anchor, newAnchor, anchor);
 
         }
 
         internal class Anchor
         {
-            internal readonly Node Left;
-            internal readonly Node Right;
-            internal readonly DequeStatus Status;
+            internal readonly Node _left;
+            internal readonly Node _right;
+            internal readonly DequeStatus _status;
 
             public Anchor()
             {
-                Right = Left = null;
-                Status = DequeStatus.Stable;
+                _right = _left = null;
+                _status = DequeStatus.Stable;
             }
 
             public Anchor(Node left, Node right, DequeStatus status)
             {
-                Left = left;
-                Right = right;
-                Status = status;
+                _left = left;
+                _right = right;
+                _status = status;
             }
         }
 
@@ -204,13 +204,13 @@ namespace DequeNet
 
         internal class Node
         {
-            internal volatile Node Left;
-            internal volatile Node Right;
-            internal readonly T Value;
+            internal volatile Node _left;
+            internal volatile Node _right;
+            internal readonly T _value;
 
             internal Node(T value)
             {
-                Value = value;
+                _value = value;
             }
         }
 
