@@ -138,6 +138,98 @@ namespace DequeNet.Unit
             Assert.True(remainingNodes > 0);
             Assert.Equal(initialCount - popCount, remainingNodes);
         }
+
+        [Fact]
+        public void ConcurrentPushLeftMaintainsRightPointersIntegrity()
+        {
+            //Arrange
+            long pushCount = 0;
+            bool cancelled = false;
+
+
+            var deque = new ConcurrentDeque<int>();
+
+            //keep adding items to the deque
+            ThreadStart pushLeft = () =>
+            {
+                while (!cancelled)
+                {
+                    deque.PushLeft(0);
+                    Interlocked.Increment(ref pushCount);
+                }
+            };
+
+            //Act
+            pushLeft.RunInParallel(() => cancelled = true, ThreadCount, RunningTime);
+
+            //Assert
+            //traverse the deque from left to right
+            long nodesCount = deque.GetNodes().LongCount();
+            Assert.True(nodesCount > 0);
+            Assert.Equal(pushCount, nodesCount);
+        }
+
+        [Fact]
+        public void ConcurrentPushLeftMaintainsLeftPointersIntegrity()
+        {
+            //Arrange
+            long pushCount = 0;
+            bool cancelled = false;
+
+            var deque = new ConcurrentDeque<int>();
+
+            //keep adding items to the deque
+            ThreadStart pushLeft = () =>
+            {
+                while (!cancelled)
+                {
+                    deque.PushLeft(0);
+                    Interlocked.Increment(ref pushCount);
+                }
+            };
+
+            //Act
+            pushLeft.RunInParallel(() => cancelled = true, ThreadCount, RunningTime);
+
+            //Assert
+            //traverse the deque from right to left
+            long nodesCount = deque.GetNodesReverse().LongCount();
+            Assert.True(nodesCount > 0);
+            Assert.Equal(pushCount, nodesCount);
+        }
+
+        [Fact]
+        public void ConcurrentPushLeftMaintainsValueIntegrity()
+        {
+            //Arrange
+            long sum = 0;
+            bool cancelled = false;
+
+            var deque = new ConcurrentDeque<int>();
+
+            //keep adding items to the deque
+            ThreadStart pushLeft = () =>
+            {
+                Random rnd = new Random();
+
+                while (!cancelled)
+                {
+                    int val = rnd.Next(1, 11);
+                    deque.PushLeft(val);
+                    Interlocked.Add(ref sum, val);
+                }
+            };
+
+            //Act
+            pushLeft.RunInParallel(() => cancelled = true, ThreadCount, RunningTime);
+
+            //Assert
+            //traverse the deque from left to right
+            long actualSum = deque.GetNodes().Sum(n => n._value);
+            Assert.True(actualSum > 0);
+            Assert.Equal(sum, actualSum);
+        }
+
         // ReSharper enable AccessToModifiedClosure
     }
 }

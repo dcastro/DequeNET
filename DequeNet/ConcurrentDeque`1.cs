@@ -159,11 +159,6 @@ namespace DequeNet
                 StabilizeLeft(anchor);
         }
 
-        private void StabilizeLeft(Anchor anchor)
-        {
-
-        }
-
         /// <summary>
         /// Stabilizes the deque when in <see cref="DequeStatus.RPush"/> status.
         /// </summary>
@@ -212,7 +207,56 @@ namespace DequeNet
              */
             var newAnchor = new Anchor(anchor._left, anchor._right, DequeStatus.Stable);
             Interlocked.CompareExchange(ref _anchor, newAnchor, anchor);
+        }
 
+        /// <summary>
+        /// Stabilizes the deque when in <see cref="DequeStatus.LPush"/> status.
+        /// </summary>
+        /// <remarks>
+        /// Stabilization is done in two steps:
+        /// (1) update the previous leftmost node's left pointer to point to the new leftmost node;
+        /// (2) update the anchor, changing the status to <see cref="DequeStatus.Stable"/>.
+        /// </remarks>
+        /// <param name="anchor"></param>
+        private void StabilizeLeft(Anchor anchor)
+        {
+            //quick check to see if the anchor has been updated by another thread
+            if (_anchor != anchor)
+                return;
+
+            //grab a reference to the new node
+            var newNode = anchor._left;
+
+            //grab a reference to the previous leftmost node and its left pointer
+            var prev = newNode._right;
+            var prevNext = prev._left;
+
+            //if the previous leftmost node doesn't point to the new leftmost node, we need to update it
+            if (prevNext != newNode)
+            {
+                /**
+                 * Quick check to see if the anchor has been updated by another thread.
+                 * If it has been updated, we can't touch the prev node.
+                 * Some other thread may have popped the new node, pushed another node and stabilized the deque.
+                 * If that's the case, then prev node's left pointer is pointing to the other node.
+                 */
+                if (_anchor != anchor)
+                    return;
+
+                //try to make the previous leftmost node point to the next node.
+                //CAS failure means that another thread already stabilized the deque.
+                if (Interlocked.CompareExchange(ref prev._left, newNode, prevNext) != prevNext)
+                    return;
+            }
+
+            /**
+             * Try to mark the anchor as stable.
+             * This step is done outside of the previous "if" block:
+             *   even though another thread may have already updated prev's left pointer,
+             *   this thread might still preempt the other and perform the second step (i.e., update the anchor).
+             */
+            var newAnchor = new Anchor(anchor._left, anchor._right, DequeStatus.Stable);
+            Interlocked.CompareExchange(ref _anchor, newAnchor, anchor);
         }
 
         internal class Anchor
@@ -221,13 +265,13 @@ namespace DequeNet
             internal readonly Node _right;
             internal readonly DequeStatus _status;
 
-            public Anchor()
+            internal Anchor()
             {
                 _right = _left = null;
                 _status = DequeStatus.Stable;
             }
 
-            public Anchor(Node left, Node right, DequeStatus status)
+            internal Anchor(Node left, Node right, DequeStatus status)
             {
                 _left = left;
                 _right = right;

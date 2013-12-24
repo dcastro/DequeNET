@@ -204,5 +204,24 @@ namespace DequeNet.Unit
             var newNode = anchor._left;
             Assert.Equal(prevValue, newNode._right._value);
         }
+
+        [Fact]
+        public void PushLeftStabilizesDeque()
+        {
+            //Arrange
+            const int prevValue = 1;
+            const int value = 5;
+            var deque = new ConcurrentDeque<int>();
+            deque.PushLeft(prevValue);
+
+            //Act
+            deque.PushLeft(value);
+
+            //Assert
+            var anchor = deque._anchor;
+            var newNode = anchor._left;
+            Assert.Same(newNode, newNode._right._left);
+            Assert.Equal(ConcurrentDeque<int>.DequeStatus.Stable, anchor._status);
+        }
     }
 }
