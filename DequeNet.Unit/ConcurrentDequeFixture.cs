@@ -118,7 +118,7 @@ namespace DequeNet.Unit
         }
 
         [Fact]
-        public void TryPopReturnsTheLastRemainingItem()
+        public void TryPopRightReturnsTheLastRemainingItem()
         {
             //Arrange
             var deque = new ConcurrentDeque<int>();
@@ -134,7 +134,7 @@ namespace DequeNet.Unit
         }
 
         [Fact]
-        public void TryPopReturnsTheRightmostItem()
+        public void TryPopRightReturnsTheRightmostItem()
         {
             //Arrange
             var deque = new ConcurrentDeque<int>();
@@ -222,6 +222,52 @@ namespace DequeNet.Unit
             var newNode = anchor._left;
             Assert.Same(newNode, newNode._right._left);
             Assert.Equal(ConcurrentDeque<int>.DequeStatus.Stable, anchor._status);
+        }
+
+        [Fact]
+        public void TryPopLeftFailsOnEmptyDeque()
+        {
+            //Arrange
+            var deque = new ConcurrentDeque<int>();
+
+            //Act & Assert
+            int item;
+            Assert.False(deque.TryPopLeft(out item));
+            Assert.Equal(item, default(int));
+        }
+
+        [Fact]
+        public void TryPopLeftReturnsTheLastRemainingItem()
+        {
+            //Arrange
+            var deque = new ConcurrentDeque<int>();
+            deque.PushRight(1);
+
+            //Act & Assert
+            int item;
+            Assert.True(deque.TryPopLeft(out item));
+            Assert.Equal(item, 1);
+
+            long nodesCount = deque.GetNodes().LongCount();
+            Assert.Equal(0, nodesCount);
+        }
+
+        [Fact]
+        public void TryPopLeftReturnsTheLeftmostItem()
+        {
+            //Arrange
+            var deque = new ConcurrentDeque<int>();
+            deque.PushRight(1);
+            deque.PushRight(3);
+            deque.PushRight(5);
+
+            //Act & Assert
+            int item;
+            Assert.True(deque.TryPopLeft(out item));
+            Assert.Equal(item, 1);
+
+            long nodesCount = deque.GetNodes().LongCount();
+            Assert.Equal(2, nodesCount);
         }
     }
 }

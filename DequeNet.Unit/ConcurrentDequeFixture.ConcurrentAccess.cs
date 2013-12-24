@@ -230,6 +230,37 @@ namespace DequeNet.Unit
             Assert.Equal(sum, actualSum);
         }
 
+        [Fact]
+        public void TryPopLeftIsAtomic()
+        {
+            //Arrange
+            const int initialCount = 5000000;
+            const double stopAt = initialCount * 0.9;
+
+            int popCount = 0;
+            var deque = new ConcurrentDeque<int>();
+
+            for (int i = 0; i < initialCount; i++)
+                deque.PushLeft(i);
+
+            ThreadStart popLeft = () =>
+            {
+                while (popCount <= stopAt)
+                {
+                    int i;
+                    Assert.True(deque.TryPopLeft(out i));
+                    Interlocked.Increment(ref popCount);
+                }
+            };
+            //Act
+            popLeft.RunInParallel(ThreadCount, RunningTime);
+
+            //Assert
+            int remainingNodes = deque.GetNodes().Count();
+            Assert.True(remainingNodes > 0);
+            Assert.Equal(initialCount - popCount, remainingNodes);
+        }
+
         // ReSharper enable AccessToModifiedClosure
     }
 }

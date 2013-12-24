@@ -137,7 +137,7 @@ namespace DequeNet
                 else
                 {
                     //if the deque is unstable,
-                    //attempt to bring it to a stable state before trying to insert the node.
+                    //attempt to bring it to a stable state before trying to remove the node.
                     Stabilize(anchor);
                 }
             }
@@ -148,7 +148,42 @@ namespace DequeNet
 
         public bool TryPopLeft(out T item)
         {
-            throw new NotImplementedException();
+            Anchor anchor;
+            while (true)
+            {
+                anchor = _anchor;
+
+                if (anchor._left == null)
+                {
+                    //return false if the deque is empty
+                    item = default(T);
+                    return false;
+                }
+                if (anchor._right == anchor._left)
+                {
+                    //update both pointers if the deque has only one node
+                    var newAnchor = new Anchor(null, null, DequeStatus.Stable);
+                    if (Interlocked.CompareExchange(ref _anchor, newAnchor, anchor) == anchor)
+                        break;
+                }
+                else if (anchor._status == DequeStatus.Stable)
+                {
+                    //update left pointer if deque has > 1 node
+                    var prev = anchor._left._right;
+                    var newAnchor = new Anchor(prev, anchor._right, anchor._status);
+                    if (Interlocked.CompareExchange(ref _anchor, newAnchor, anchor) == anchor)
+                        break;
+                }
+                else
+                {
+                    //if the deque is unstable,
+                    //attempt to bring it to a stable state before trying to remove the node.
+                    Stabilize(anchor);
+                }
+            }
+
+            item = anchor._left._value;
+            return true;
         }
 
         private void Stabilize(Anchor anchor)
