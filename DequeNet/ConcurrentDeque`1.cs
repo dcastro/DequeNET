@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
@@ -25,7 +26,12 @@ namespace DequeNet
         public ConcurrentDeque()
         {
             _anchor = new Anchor();
-        } 
+        }
+ 
+        public ConcurrentDeque(IEnumerable<T> items)
+        {
+            throw new NotImplementedException();
+        }  
         
         public void PushRight(T item)
         {
@@ -297,6 +303,44 @@ namespace DequeNet
              */
             var newAnchor = new Anchor(anchor._left, anchor._right, DequeStatus.Stable);
             Interlocked.CompareExchange(ref _anchor, newAnchor, anchor);
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public void CopyTo(Array array, int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int Count { get; private set; }
+        public object SyncRoot { get; private set; }
+        public bool IsSynchronized { get; private set; }
+        public void CopyTo(T[] array, int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TryAdd(T item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TryTake(out T item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T[] ToArray()
+        {
+            throw new NotImplementedException();
         }
 
         internal class Anchor
