@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -378,6 +379,56 @@ namespace DequeNet.Unit
 
             //Act & Assert
             Assert.Equal(new[] {2, 1}, deque.Reverse());
+        }
+
+        [Fact]
+        public void ToArrayReturnsSnapshot()
+        {
+            //Arrange
+            var deque = new ConcurrentDeque<int>();
+            deque.PushRight(0);
+            deque.PushRight(1);
+            deque.PushRight(2);
+
+            //Act
+            var array = deque.ToArray();
+
+            //Assert
+            Assert.Equal(new[] {0, 1, 2}, array);
+        }
+
+        [Fact]
+        public void CopyToCopiesItems()
+        {
+            //Arrange
+            var deque = new ConcurrentDeque<int>();
+            deque.PushRight(0);
+            deque.PushRight(1);
+            deque.PushRight(2);
+
+            //Act
+            var array = new int[3];
+            deque.CopyTo(array, 0);
+
+            //Assert
+            Assert.Equal(new[] { 0, 1, 2 }, array);
+        }
+
+        [Fact]
+        public void CollectionCopyToCopiesItems()
+        {
+            //Arrange
+            var deque = new ConcurrentDeque<int>();
+            deque.PushRight(0);
+            deque.PushRight(1);
+            deque.PushRight(2);
+
+            //Act
+            var array = new int[3];
+            ((ICollection) deque).CopyTo(array, 0);
+
+            //Assert
+            Assert.Equal(new[] { 0, 1, 2 }, array);
         }
     }
 }

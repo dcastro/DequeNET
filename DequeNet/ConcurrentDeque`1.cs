@@ -374,19 +374,10 @@ namespace DequeNet
             return GetEnumerator();
         }
 
-        public void CopyTo(Array array, int index)
-        {
-            throw new NotImplementedException();
-        }
-
         public int Count { get; private set; }
         public object SyncRoot { get; private set; }
         public bool IsSynchronized { get; private set; }
-        public void CopyTo(T[] array, int index)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public bool TryAdd(T item)
         {
             throw new NotImplementedException();
@@ -397,10 +388,82 @@ namespace DequeNet
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Copies the elements of the <see cref="ICollection"/> to an <see cref="T:System.Array"/>,
+        /// starting at a particular <see cref="T:System.Array"/> index. 
+        /// </summary>
+        /// <param name="array">The one-dimensional <see cref="T:System.Array">Array</see> that is the destination of the elements copied from the <see cref="ICollection"/>. The <see cref="T:System.Array">Array</see> must have zero-based indexing.</param> 
+        /// <param name="index">The zero-based index in <paramref name="array"/> at which copying begins.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="array"/> is a null reference (Nothing in Visual Basic).</exception> 
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than zero.</exception> 
+        /// <exception cref="ArgumentException"> 
+        /// <paramref name="array"/> is multidimensional. -or-
+        /// <paramref name="array"/> does not have zero-based indexing. -or- 
+        /// <paramref name="index"/> is equal to or greater than the length of the <paramref name="array"/>
+        /// -or- The number of elements in the source <see cref="ICollection"/> is
+        /// greater than the available space from <paramref name="index"/> to the end of the destination
+        /// <paramref name="array"/>. -or- The type of the source <see cref="ICollection"/> cannot be cast
+        /// automatically to the type of the destination <paramref name="array"/>. 
+        /// </exception> 
+        void ICollection.CopyTo(Array array, int index)
+        {
+            // We must be careful not to corrupt the array, so we will first accumulate an 
+            // internal list of elements that we will then copy to the array. This requires
+            // some extra allocation, but is necessary since we don't know up front whether 
+            // the array is sufficiently large to hold the stack's contents.
+            ((ICollection) ToList()).CopyTo(array, index);
+        }
+
+        /// <summary>
+        /// Copies the <see cref="ConcurrentDeque{T}"/> elements to an existing one-dimensional <see cref="T:System.Array">Array</see>, starting at the specified array index. 
+        /// </summary>
+        /// <param name="array">
+        /// The one-dimensional <see cref="T:System.Array">Array</see> that is the destination of the elements copied from the <see cref="ConcurrentDeque{T}"/>. The <see cref="T:System.Array">Array</see> must have zero-based indexing.
+        /// </param> 
+        /// <param name="index">
+        /// The zero-based index in <paramref name="array"/> at which copying begins.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="array"/> is a null reference (Nothing in Visual Basic).
+        /// </exception> 
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="index"/> is less than zero.
+        /// </exception> 
+        /// <exception cref="ArgumentException">
+        /// <paramref name="index"/> is equal to or greater than the length of the <paramref name="array"/>
+        /// -or- The number of elements in the source <see cref="ConcurrentDeque{T}"/> is greater than the 
+        /// available space from <paramref name="index"/> to the end of the destination <paramref
+        /// name="array"/>.
+        /// </exception>
+        public void CopyTo(T[] array, int index)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException("array");
+            }
+
+            // We must be careful not to corrupt the array, so we will first accumulate an
+            // internal list of elements that we will then copy to the array. This requires
+            // some extra allocation, but is necessary since we don't know up front whether 
+            // the array is sufficiently large to hold the stack's contents.
+            ToList().CopyTo(array, index);
+        }
+
+        /// <summary> 
+        /// Copies the items stored in the <see cref="ConcurrentDeque{T}"/> to a new array.
+        /// </summary> 
+        /// <returns>
+        /// A new array containing a snapshot of elements copied from the <see cref="ConcurrentDeque{T}"/>.
+        /// </returns>
         public T[] ToArray()
         {
-            throw new NotImplementedException();
+            return ToList().ToArray();
         }
+
+        private List<T> ToList()
+        {
+            return new List<T>(this);
+        } 
 
         internal class Anchor
         {
