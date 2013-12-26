@@ -18,6 +18,7 @@ namespace DequeNet.Unit
 
         // ReSharper disable AccessToModifiedClosure
         [Fact]
+        [Trait("Category", "LongRunning")]
         public void ConcurrentPushRightMaintainsRightPointersIntegrity()
         {
             //Arrange
@@ -48,6 +49,7 @@ namespace DequeNet.Unit
         }
 
         [Fact]
+        [Trait("Category", "LongRunning")]
         public void ConcurrentPushRightMaintainsLeftPointersIntegrity()
         {
             //Arrange
@@ -77,6 +79,7 @@ namespace DequeNet.Unit
         }
 
         [Fact]
+        [Trait("Category", "LongRunning")]
         public void ConcurrentPushRightMaintainsValueIntegrity()
         {
             //Arrange
@@ -109,6 +112,7 @@ namespace DequeNet.Unit
         }
 
         [Fact]
+        [Trait("Category", "LongRunning")]
         public void TryPopRightIsAtomic()
         {
             //Arrange
@@ -140,13 +144,12 @@ namespace DequeNet.Unit
         }
 
         [Fact]
+        [Trait("Category", "LongRunning")]
         public void ConcurrentPushLeftMaintainsRightPointersIntegrity()
         {
             //Arrange
             long pushCount = 0;
             bool cancelled = false;
-
-
             var deque = new ConcurrentDeque<int>();
 
             //keep adding items to the deque
@@ -170,6 +173,7 @@ namespace DequeNet.Unit
         }
 
         [Fact]
+        [Trait("Category", "LongRunning")]
         public void ConcurrentPushLeftMaintainsLeftPointersIntegrity()
         {
             //Arrange
@@ -199,6 +203,7 @@ namespace DequeNet.Unit
         }
 
         [Fact]
+        [Trait("Category", "LongRunning")]
         public void ConcurrentPushLeftMaintainsValueIntegrity()
         {
             //Arrange
@@ -231,6 +236,7 @@ namespace DequeNet.Unit
         }
 
         [Fact]
+        [Trait("Category", "LongRunning")]
         public void TryPopLeftIsAtomic()
         {
             //Arrange

@@ -18,6 +18,7 @@ namespace DequeNet.Functional
         /// Verifies that parallel interleaved push right/pop right operations don't leave the deque in a corrupted state
         /// </summary>
         [Fact]
+        [Trait("Category", "LongRunning")]
         public void InterleavedPushPopRightOps()
         {
             //Arrange
@@ -61,6 +62,7 @@ namespace DequeNet.Functional
         /// Verifies that parallel interleaved push right/pop left operations don't leave the deque in a corrupted state
         /// </summary>
         [Fact]
+        [Trait("Category", "LongRunning")]
         public void InterleavedPushPopLeftOps()
         {
             //Arrange
@@ -109,6 +111,7 @@ namespace DequeNet.Functional
         /// At the end, we assert that we can still traverse the deque (from left to right, and right to left) and that the nodes contain the excepted values.
         /// </summary>
         [Fact]
+        [Trait("Category", "LongRunning")]
         public void InterleavedOps()
         {
             //Arrange
