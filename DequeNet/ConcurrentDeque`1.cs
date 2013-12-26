@@ -17,6 +17,11 @@ namespace DequeNet
         // ReSharper disable InconsistentNaming
         internal volatile Anchor _anchor;
 
+        public bool IsEmpty
+        {
+            get { return _anchor._left == null; }
+        }
+
         public ConcurrentDeque()
         {
             _anchor = new Anchor();

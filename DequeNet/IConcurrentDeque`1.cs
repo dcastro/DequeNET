@@ -8,6 +8,8 @@ namespace DequeNet
 {
     public interface IConcurrentDeque<T>
     {
+        bool IsEmpty { get; }
+
         void PushRight(T item);
         void PushLeft(T item);
 

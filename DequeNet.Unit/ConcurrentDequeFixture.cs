@@ -269,5 +269,22 @@ namespace DequeNet.Unit
             long nodesCount = deque.GetNodes().LongCount();
             Assert.Equal(2, nodesCount);
         }
+
+        [Fact]
+        public void IsEmptyReturnsTrueIfDequeIsEmpty()
+        {
+            var deque = new ConcurrentDeque<int>();
+
+            Assert.True(deque.IsEmpty);
+        }
+
+        [Fact]
+        public void IsEmptyReturnsFalseIfDequeHasItems()
+        {
+            var deque = new ConcurrentDeque<int>();
+            deque.PushRight(0);
+
+            Assert.False(deque.IsEmpty);
+        }
     }
 }
