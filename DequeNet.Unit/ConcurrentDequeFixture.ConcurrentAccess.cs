@@ -131,7 +131,7 @@ namespace DequeNet.Unit
                                         }
                                     };
             //Act
-            popRight.RunInParallel(ThreadCount, RunningTime);
+            popRight.RunInParallel(ThreadCount);
 
             //Assert
             int remainingNodes = deque.GetNodes().Count();
@@ -253,7 +253,7 @@ namespace DequeNet.Unit
                 }
             };
             //Act
-            popLeft.RunInParallel(ThreadCount, RunningTime);
+            popLeft.RunInParallel(ThreadCount);
 
             //Assert
             int remainingNodes = deque.GetNodes().Count();

@@ -25,8 +25,7 @@ namespace DequeNet.Test.Common
             Thread.Sleep(runningTime);
 
             //stop threads
-            if (cancel != null)
-                cancel();
+            cancel();
 
             for (int i = 0; i < threadCount; i++)
             {
@@ -34,9 +33,20 @@ namespace DequeNet.Test.Common
             }
         }
 
-        public static void RunInParallel(this ThreadStart action, int threadCount, int runningTime)
+        public static void RunInParallel(this ThreadStart action, int threadCount)
         {
-            action.RunInParallel(null, threadCount, runningTime);
+            //start threads
+            var threads = new Thread[threadCount];
+            for (int i = 0; i < threadCount; i++)
+            {
+                threads[i] = new Thread(action);
+                threads[i].Start();
+            }
+
+            for (int i = 0; i < threadCount; i++)
+            {
+                threads[i].Join();
+            }
         }
     }
 }
