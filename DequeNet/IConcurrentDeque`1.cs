@@ -16,5 +16,7 @@ namespace DequeNet
 
         bool TryPopRight(out T item);
         bool TryPopLeft(out T item);
+
+        IEnumerable<T> Reverse();
     }
 }

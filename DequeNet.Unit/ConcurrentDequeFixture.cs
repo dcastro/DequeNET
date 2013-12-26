@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Xunit;
@@ -285,6 +286,98 @@ namespace DequeNet.Unit
             deque.PushRight(0);
 
             Assert.False(deque.IsEmpty);
+        }
+
+        [Fact]
+        public void EnumeratorReturnsPushedNodes()
+        {
+            //Arrange
+            var deque = new ConcurrentDeque<int>();
+            deque.PushRight(1);
+            deque.PushRight(2);
+            deque.PushRight(3);
+            deque.PushLeft(0);
+
+            //Act & Assert
+            Assert.Equal(new[] {0, 1, 2, 3}, deque);
+        }
+
+        [Fact]
+        public void EnumeratorDoesNotReturnRightPoppedNodes()
+        {
+            //Arrange
+            var deque = new ConcurrentDeque<int>();
+            deque.PushRight(0);
+            deque.PushRight(1);
+            deque.PushRight(2);
+
+            int item;
+            deque.TryPopRight(out item);
+
+            //Act & Assert
+            Assert.Equal(new[] {0, 1}, deque);
+        }
+
+        [Fact]
+        public void EnumeratorDoesNotReturnLeftPoppedNodes()
+        {
+            //Arrange
+            var deque = new ConcurrentDeque<int>();
+            deque.PushRight(0);
+            deque.PushRight(1);
+            deque.PushRight(2);
+
+            int item;
+            deque.TryPopLeft(out item);
+
+            //Act & Assert
+            Assert.Equal(new[] {1, 2}, deque);
+        }
+
+        [Fact]
+        public void ReverseEnumeratorReturnsPushedNodes()
+        {
+            //Arrange
+            var deque = new ConcurrentDeque<int>();
+            deque.PushRight(1);
+            deque.PushRight(2);
+            deque.PushRight(3);
+            deque.PushLeft(0);
+
+            //Act & Assert
+            Assert.Equal(new[] {3, 2, 1, 0}, deque.Reverse());
+        }
+
+        [Fact]
+        public void ReverseEnumeratorDoesNotReturnRightPoppedNodes()
+        {
+            //Arrange
+            var deque = new ConcurrentDeque<int>();
+            deque.PushRight(0);
+            deque.PushRight(1);
+            deque.PushRight(2);
+
+            int item;
+            deque.TryPopRight(out item);
+
+            //Act & Assert
+            Assert.Equal(new[] {1, 0}, deque.Reverse());
+        }
+
+        [Fact]
+        public void ReverseEnumeratorDoesNotReturnLeftPoppedNodes()
+        {
+            //Arrange
+            var deque = new ConcurrentDeque<int>();
+            deque.PushRight(0);
+            deque.PushRight(1);
+            deque.PushRight(2);
+
+            int item;
+            deque.TryPopLeft(out item);
+
+            //Act & Assert
+            Assert.Equal(new[] {2, 1}, deque.Reverse());
         }
     }
 }

@@ -153,7 +153,12 @@ namespace DequeNet
                 }
             }
 
-            item = anchor._right._value;
+            var node = anchor._right;
+            item = node._value;
+            
+            //mark node as disposed
+            node._status = NodeStatus.RightPopped;
+
             return true;
         }
 
@@ -193,7 +198,12 @@ namespace DequeNet
                 }
             }
 
-            item = anchor._left._value;
+            var node = anchor._left;
+            item = node._value;
+
+            //mark node as disposed
+            node._status = NodeStatus.LeftPopped;
+
             return true;
         }
 
@@ -305,9 +315,58 @@ namespace DequeNet
             Interlocked.CompareExchange(ref _anchor, newAnchor, anchor);
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the <see cref="ConcurrentDeque{T}"/> from left to right.
+        /// </summary>
+        /// <returns>An enumerator for the <see cref="ConcurrentDeque{T}"/>.</returns>
+        /// <remarks>
+        /// The enumerator iterates through the nodes in the deque from left to right and is safe to use concurrently with
+        /// reads and writes to the deque.
+        /// However, it does not represent a moment-in-time snapshot of the deque.
+        /// Items popped from the left end and items pushed onto the right end after <see cref="GetEnumerator"/> was called may be exposed through the enumerator.
+        /// Items popped from the right end and items pushed onto the the left end after <see cref="GetEnumerator"/> was called will not be exposed.
+        /// </remarks>
         public IEnumerator<T> GetEnumerator()
         {
-            throw new NotImplementedException();
+            //fetch the leftmost node
+            var current = _anchor._left;
+
+            /**
+             * Loop until we go out of bounds or we reach a node that
+             * has already been popped from the right end of the deque.
+             */
+            while (current != null && current._status != NodeStatus.RightPopped)
+            {
+                yield return current._value;
+                current = current._right;
+            }
+        }
+
+        /// <summary>
+        /// Returns an enumerable sequence of the elements in the <see cref="ConcurrentDeque{T}"/> in reverse order.
+        /// </summary>
+        /// <returns>A reverse sequence of the elements in the <see cref="ConcurrentDeque{T}"/>.</returns>
+        /// <remarks>
+        /// The enumerable's enumerator iterates through the nodes in the deque from right to left and is safe to use concurrently with
+        /// reads and writes to the deque.
+        /// However, it does not represent a moment-in-time snapshot of the deque.
+        /// Items popped from the right end and items pushed onto the left end after <see cref="IEnumerable{T}.GetEnumerator"/> was called may be exposed through the enumerator.
+        /// Items popped from the left end and items pushed onto the the right end after <see cref="IEnumerable{T}.GetEnumerator"/> was called will not be exposed.
+        /// </remarks>
+        public IEnumerable<T> Reverse()
+        {
+            //fetch the rightmost node
+            var current = _anchor._right;
+
+            /**
+             * Loop until we go out of bounds or we reach a node that
+             * has already been popped from the right end of the deque.
+             */
+            while (current != null && current._status != NodeStatus.LeftPopped)
+            {
+                yield return current._value;
+                current = current._left;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -370,15 +429,24 @@ namespace DequeNet
             RPush
         };
 
+        internal enum NodeStatus
+        {
+            InUse,
+            RightPopped,
+            LeftPopped
+        }
+
         internal class Node
         {
             internal volatile Node _left;
             internal volatile Node _right;
             internal readonly T _value;
+            internal volatile NodeStatus _status;
 
             internal Node(T value)
             {
                 _value = value;
+                _status = NodeStatus.InUse;
             }
         }
 
