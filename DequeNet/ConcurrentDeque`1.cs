@@ -159,6 +159,14 @@ namespace DequeNet
             //mark node as disposed
             node._status = NodeStatus.RightPopped;
 
+            /**
+             * Try to set the new rightmost node's right pointer to null to avoid memory leaks.
+             * We try only once - if CAS fails, then another thread must have pushed a new node, in which case we simply carry on.
+             */
+            var rightmostNode = node._left;
+            if (rightmostNode != null)
+                Interlocked.CompareExchange(ref rightmostNode._right, null, node);
+
             return true;
         }
 
@@ -203,6 +211,14 @@ namespace DequeNet
 
             //mark node as disposed
             node._status = NodeStatus.LeftPopped;
+            
+            /**
+             * Try to set the new leftmost node's left pointer to null to avoid memory leaks.
+             * We try only once - if CAS fails, then another thread must have pushed a new node, in which case we simply carry on.
+             */
+            var leftmostNode = node._right;
+            if (leftmostNode != null)
+                Interlocked.CompareExchange(ref leftmostNode._left, null, node);
 
             return true;
         }
