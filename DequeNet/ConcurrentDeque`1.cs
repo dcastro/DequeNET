@@ -155,9 +155,6 @@ namespace DequeNet
 
             var node = anchor._right;
             item = node._value;
-            
-            //mark node as disposed
-            node._status = NodeStatus.RightPopped;
 
             /**
              * Try to set the new rightmost node's right pointer to null to avoid memory leaks.
@@ -208,9 +205,6 @@ namespace DequeNet
 
             var node = anchor._left;
             item = node._value;
-
-            //mark node as disposed
-            node._status = NodeStatus.LeftPopped;
             
             /**
              * Try to set the new leftmost node's left pointer to null to avoid memory leaks.
@@ -347,11 +341,8 @@ namespace DequeNet
             //fetch the leftmost node
             var current = _anchor._left;
 
-            /**
-             * Loop until we go out of bounds or we reach a node that
-             * has already been popped from the right end of the deque.
-             */
-            while (current != null && current._status != NodeStatus.RightPopped)
+            //Loop until we go out of bounds
+            while (current != null)
             {
                 yield return current._value;
                 current = current._right;
@@ -374,11 +365,8 @@ namespace DequeNet
             //fetch the rightmost node
             var current = _anchor._right;
 
-            /**
-             * Loop until we go out of bounds or we reach a node that
-             * has already been popped from the right end of the deque.
-             */
-            while (current != null && current._status != NodeStatus.LeftPopped)
+            //Loop until we go out of bounds
+            while (current != null)
             {
                 yield return current._value;
                 current = current._left;
@@ -508,24 +496,15 @@ namespace DequeNet
             RPush
         };
 
-        internal enum NodeStatus
-        {
-            InUse,
-            RightPopped,
-            LeftPopped
-        }
-
         internal class Node
         {
             internal volatile Node _left;
             internal volatile Node _right;
             internal readonly T _value;
-            internal volatile NodeStatus _status;
 
             internal Node(T value)
             {
                 _value = value;
-                _status = NodeStatus.InUse;
             }
         }
 
