@@ -55,6 +55,7 @@
     <Compile Include="ConcurrentDequeFixture.ConcurrentAccess.cs" />
     <Compile Include="ConcurrentDequeFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SnapshotAlgorithm.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

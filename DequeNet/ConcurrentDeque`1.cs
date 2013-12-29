@@ -464,9 +464,126 @@ namespace DequeNet
             return ToList().ToArray();
         }
 
+        /// <summary>
+        /// Takes a moment-in-time snapshot of the deque.
+        /// </summary>
+        /// <returns>A list representing a moment-in-time snapshot of the deque.</returns>
+        /// <remarks>
+        /// The algorithm runs in linear O(n) time.
+        /// 
+        /// This implementation relies on the following invariant:
+        /// If at time t, x was the leftmost node and y was the rightmost node, 
+        /// regardless of how many nodes are pushed/popped from either end thereafter, the paths
+        /// (a) x->a (obtained by traversing the deque recursively using a node's right pointer starting from x), and
+        /// (b) y->b (obtained by traversing the deque recursively using a node's left pointer starting from y)
+        /// will always have at least 1 node in common.
+        /// 
+        /// This means that, for a given x and y, even if the deque is mutated during the algorithm's
+        /// execution, we can always rebuild the original x-y sequence by finding a node c, common to both
+        /// x->a and y->b paths, and merging the paths by the common node.
+        /// </remarks>
         private List<T> ToList()
         {
-            return new List<T>(this);
+            //try to grab a reference to a stable anchor (fast route)
+            Anchor anchor = _anchor;
+
+            //try to grab a reference to a stable anchor (slow route)
+            if (anchor._status != DequeStatus.Stable)
+            {
+                var spinner = new SpinWait();
+                do
+                {
+                    anchor = _anchor;
+                    spinner.SpinOnce();
+                } while (anchor._status != DequeStatus.Stable);
+            }
+
+            var x = anchor._left;
+            var y = anchor._right;
+
+            //check if deque is empty
+            if(x == null)
+                return new List<T>();
+
+            //check if deque has only 1 item
+            if (x == y)
+                return new List<T> {x._value};
+
+            var xaPath = new List<Node>();
+            var current = x;
+            while (current != null && current != y)
+            {
+                xaPath.Add(current);
+                current = current._right;
+            }
+
+            /**
+             * If the 'y' node hasn't been popped from the right side of the deque,
+             * then we should still be able to find the original x-y sequence 
+             * using a node's right pointer.
+             * 
+             * If 'current' does not equal 'y', then the 'y' node must have been popped by
+             * another thread during the while loop and the traversal wasn't successful.
+             */
+            if (current == y)
+            {
+                xaPath.Add(current);
+                return xaPath.Select(node => node._value).ToList();
+            }
+
+            /**
+             * If the 'y' node has been popped from the right end, we need to find all nodes that have
+             * been popped from the right end and rebuild the original sequence.
+             * 
+             * To do this, we need to traverse the deque from right to left (using a node's left pointer)
+             * until we find a node c common to both x->a and y->b paths. Such a node is either:
+             * (a) currently part of the deque* or
+             * (b) the last node of the x->a path (i.e., node 'a') or
+             * (c) the last node to be popped from the left (if all nodes between 'x' and 'y' were popped from the deque).
+             * 
+             * -- Predicate (a) --
+             * A node belongs to the deque if node.left.right == node (except for the leftmost node) if the deque has > 1 nodes.
+             * If the deque has exactly one node, we know we've found that node if:
+             * (1) all nodes to its right in the x-y sequence don't fall under predicates (a), (b) and (c) and
+             * (2) node.left == null
+             * 
+             * -- Predicate (b) --
+             * True for a node n if n == a
+             * 
+             * -- Predicate (c) --
+             * True for a node n if:
+             * (1) all nodes to its right in the x-y sequence don't fall under predicates (a), (b) and (c) and
+             * (2) node.left == null
+             */
+            current = y;
+            var a = xaPath.Last();
+            var ycPath = new Stack<Node>();
+            while (current._left != null &&
+                   current._left._right != current &&
+                   current != a)
+            {
+                ycPath.Push(current);
+                current = current._left;
+            }
+
+            //this node is common to the list and the stack
+            var common = current;
+            ycPath.Push(common);
+
+            /**
+             * Merge the x->a and the y->c paths by the common node.
+             * This is done by removing the nodes in x->a that come after c,
+             * and appending all nodes in the y->c path in reverse order.
+             * Since we used a LIFO stack to store all nodes in the y->c path,
+             * we can simply iterate over it to reverse the order in which they were inserted.
+             */
+            var xySequence = xaPath
+                .TakeWhile(node => node != common)
+                .Select(node => node._value)
+                .Concat(
+                    ycPath.Select(node => node._value));
+
+            return xySequence.ToList();
         } 
 
         internal class Anchor
