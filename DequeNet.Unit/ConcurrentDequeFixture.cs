@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Xunit;
 using DequeNet.Test.Common;
+using Xunit.Extensions;
 
 namespace DequeNet.Unit
 {
@@ -429,6 +430,32 @@ namespace DequeNet.Unit
 
             //Assert
             Assert.Equal(new[] { 0, 1, 2 }, array);
+        }
+
+        [Theory]
+        [PropertyData("PushItems")]
+        public void CountReturnsTheNumberOfItemsInTheDeque(int[] itemsToPush)
+        {
+            var deque = new ConcurrentDeque<int>();
+            foreach (var item in itemsToPush)
+            {
+                deque.PushRight(item);
+            }
+
+            Assert.Equal(itemsToPush.Length, deque.Count);
+        }
+
+        public static IEnumerable<object[]> PushItems
+        {
+            get
+            {
+                return new[]
+                    {
+                        new object[] {new int[] {}},
+                        new object[] {new[] {1}},
+                        new object[] {new[] {1, 1}}
+                    };
+            }
         }
     }
 }

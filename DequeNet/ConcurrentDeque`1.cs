@@ -23,6 +23,11 @@ namespace DequeNet
             get { return _anchor._left == null; }
         }
 
+        public int Count
+        {
+            get { return ToList().Count; }
+        }
+
         public ConcurrentDeque()
         {
             _anchor = new Anchor();
@@ -378,7 +383,6 @@ namespace DequeNet
             return GetEnumerator();
         }
 
-        public int Count { get; private set; }
         public object SyncRoot { get; private set; }
         public bool IsSynchronized { get; private set; }
         
