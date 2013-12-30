@@ -541,6 +541,52 @@ namespace DequeNet.Unit
             Assert.True(deque.IsEmpty);
         }
 
+        [Fact]
+        public void TryPeekRightInspectsTheRightmostItem()
+        {
+            var deque = new ConcurrentDeque<int>();
+            deque.PushRight(1);
+            deque.PushRight(2);
+            deque.PushRight(3);
+
+            int item;
+            Assert.True(deque.TryPeekRight(out item));
+            Assert.Equal(3, item);
+            Assert.True(deque.Contains(3));
+        }
+
+        [Fact]
+        public void TryPeekRightFailsIfDequeIsEmpty()
+        {
+            var deque = new ConcurrentDeque<int>();
+
+            int item;
+            Assert.False(deque.TryPeekRight(out item));
+        }
+
+        [Fact]
+        public void TryPeekLeftInspectsTheLeftmostItem()
+        {
+            var deque = new ConcurrentDeque<int>();
+            deque.PushRight(1);
+            deque.PushRight(2);
+            deque.PushRight(3);
+
+            int item;
+            Assert.True(deque.TryPeekLeft(out item));
+            Assert.Equal(1, item);
+            Assert.True(deque.Contains(1));
+        }
+
+        [Fact]
+        public void TryPeekLeftFailsIfDequeIsEmpty()
+        {
+            var deque = new ConcurrentDeque<int>();
+
+            int item;
+            Assert.False(deque.TryPeekLeft(out item));
+        }
+
         public static IEnumerable<object[]> PushItems
         {
             get

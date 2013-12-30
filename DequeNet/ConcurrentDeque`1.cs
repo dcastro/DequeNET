@@ -304,6 +304,46 @@ namespace DequeNet
             return true;
         }
 
+        /// <summary>
+        /// Attempts to return the rightmost item of the <see cref="ConcurrentDeque{T}"/> 
+        /// without removing it.
+        /// </summary>
+        /// <param name="item">When this method returns, <paramref name="item"/> contains the rightmost item
+        /// of the <see cref="ConcurrentDeque{T}"/> or an unspecified value if the operation failed.</param>
+        /// <returns>True if an item was returned successfully; otherwise, false.</returns>
+        public bool TryPeekRight(out T item)
+        {
+            var anchor = _anchor;
+
+            if (anchor._right != null)
+            {
+                item = anchor._right._value;
+                return true;
+            }
+            item = default(T);
+            return false;
+        }
+
+        /// <summary>
+        /// Attempts to return the leftmost item of the <see cref="ConcurrentDeque{T}"/> 
+        /// without removing it.
+        /// </summary>
+        /// <param name="item">When this method returns, <paramref name="item"/> contains the leftmost item
+        /// of the <see cref="ConcurrentDeque{T}"/> or an unspecified value if the operation failed.</param>
+        /// <returns>True if an item was returned successfully; otherwise, false.</returns>
+        public bool TryPeekLeft(out T item)
+        {
+            var anchor = _anchor;
+
+            if (anchor._left != null)
+            {
+                item = anchor._left._value;
+                return true;
+            }
+            item = default(T);
+            return false;
+        }
+
         private void Stabilize(Anchor anchor)
         {
             if(anchor._status == DequeStatus.RPush)
