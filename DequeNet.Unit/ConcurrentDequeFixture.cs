@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -443,6 +444,34 @@ namespace DequeNet.Unit
             }
 
             Assert.Equal(itemsToPush.Length, deque.Count);
+        }
+
+        [Fact]
+        public void TryAddAppendsValueToTheRight()
+        {
+            //Act
+            IProducerConsumerCollection<int> deque = new ConcurrentDeque<int>();
+            deque.TryAdd(2);
+            deque.TryAdd(3);
+
+            //Assert
+            Assert.Equal(3, deque.Last());
+        }
+
+        [Fact]
+        public void TryTakeTakesValueFromTheLeft()
+        {
+            //Arrange
+            IProducerConsumerCollection<int> deque = new ConcurrentDeque<int>();
+            deque.TryAdd(2);
+            deque.TryAdd(3);
+
+            //Act
+            int item;
+            deque.TryTake(out item);
+
+            //Assert
+            Assert.Equal(2, item);
         }
 
         public static IEnumerable<object[]> PushItems

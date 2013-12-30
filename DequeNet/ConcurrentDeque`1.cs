@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
@@ -385,22 +386,48 @@ namespace DequeNet
 
         public object SyncRoot { get; private set; }
         public bool IsSynchronized { get; private set; }
-        
-        public bool TryAdd(T item)
-        {
-            throw new NotImplementedException();
-        }
 
-        public bool TryTake(out T item)
+        /// <summary>
+        /// Attempts to add an object to the <see cref="IProducerConsumerCollection{T}"/>.
+        /// </summary>
+        /// <param name="item">The object to add to the <see cref="IProducerConsumerCollection{T}"/>.</param>
+        /// <returns>
+        /// true if the object was added successfully; otherwise, false.
+        /// </returns>
+        /// <remarks>
+        /// For <see cref="ConcurrentDeque{T}"/>, this operation will always add the object to the right
+        /// end of the <see cref="ConcurrentDeque{T}"/> and return true.
+        /// </remarks>
+        bool IProducerConsumerCollection<T>.TryAdd(T item)
         {
-            throw new NotImplementedException();
+            PushRight(item);
+            return true;
         }
 
         /// <summary>
-        /// Copies the elements of the <see cref="ICollection"/> to an <see cref="T:System.Array"/>,
-        /// starting at a particular <see cref="T:System.Array"/> index. 
+        /// Attempts to remove and return an object from the <see cref="IProducerConsumerCollection{T}"/>.
         /// </summary>
-        /// <param name="array">The one-dimensional <see cref="T:System.Array">Array</see> that is the destination of the elements copied from the <see cref="ICollection"/>. The <see cref="T:System.Array">Array</see> must have zero-based indexing.</param> 
+        /// <param name="item">
+        /// When this method returns, if the object was removed and returned successfully, <paramref name="item"/> contains the removed object.
+        /// If no object was available to be removed, the value is unspecified.
+        /// </param>
+        /// <returns>
+        /// true if an object was removed and returned successfully; otherwise, false.
+        /// </returns>
+        /// <remarks>
+        /// For <see cref="ConcurrentDeque{T}"/>, this operation will attempt to remove the object
+        /// from the left end of the <see cref="ConcurrentDeque{T}"/>. 
+        /// </remarks>
+        bool IProducerConsumerCollection<T>.TryTake(out T item)
+        {
+            return TryPopLeft(out item);
+        }
+
+        /// <summary>
+        /// Copies the elements of the <see cref="ICollection"/> to an <see cref="Array"/>,
+        /// starting at a particular <see cref="Array"/> index. 
+        /// </summary>
+        /// <param name="array">The one-dimensional <see cref="Array">Array</see> that is the destination of the elements copied from the <see cref="ICollection"/>. The <see cref="Array">Array</see> must have zero-based indexing.</param> 
         /// <param name="index">The zero-based index in <paramref name="array"/> at which copying begins.</param>
         /// <exception cref="ArgumentNullException"><paramref name="array"/> is a null reference (Nothing in Visual Basic).</exception> 
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than zero.</exception> 
@@ -423,10 +450,10 @@ namespace DequeNet
         }
 
         /// <summary>
-        /// Copies the <see cref="ConcurrentDeque{T}"/> elements to an existing one-dimensional <see cref="T:System.Array">Array</see>, starting at the specified array index. 
+        /// Copies the <see cref="ConcurrentDeque{T}"/> elements to an existing one-dimensional <see cref="Array">Array</see>, starting at the specified array index. 
         /// </summary>
         /// <param name="array">
-        /// The one-dimensional <see cref="T:System.Array">Array</see> that is the destination of the elements copied from the <see cref="ConcurrentDeque{T}"/>. The <see cref="T:System.Array">Array</see> must have zero-based indexing.
+        /// The one-dimensional <see cref="Array">Array</see> that is the destination of the elements copied from the <see cref="ConcurrentDeque{T}"/>. The <see cref="Array">Array</see> must have zero-based indexing.
         /// </param> 
         /// <param name="index">
         /// The zero-based index in <paramref name="array"/> at which copying begins.
