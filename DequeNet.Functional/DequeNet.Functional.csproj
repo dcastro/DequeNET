@@ -49,7 +49,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="ConcurrentDequeFixture.cs" />
+    <Compile Include="ConcurrentDequeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

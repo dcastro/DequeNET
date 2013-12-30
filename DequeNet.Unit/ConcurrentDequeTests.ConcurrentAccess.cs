@@ -11,7 +11,7 @@ using Xunit.Extensions;
 
 namespace DequeNet.Unit
 {
-    public partial class ConcurrentDequeFixture
+    public partial class ConcurrentDequeTests
     {
         private const int ThreadCount = 20;
         private const int RunningTime = 3000;

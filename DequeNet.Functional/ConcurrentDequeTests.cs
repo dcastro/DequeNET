@@ -9,7 +9,7 @@ using DequeNet.Test.Common;
 
 namespace DequeNet.Functional
 {
-    public class ConcurrentDequeFixture
+    public class ConcurrentDequeTests
     {
         private const int ThreadCount = 20;
         private const int RunningTime = 3000;

@@ -13,7 +13,7 @@ using Xunit.Extensions;
 
 namespace DequeNet.Unit
 {
-    public partial class ConcurrentDequeFixture
+    public partial class ConcurrentDequeTests
     {
         [Fact]
         public void DequeHasNoItemsByDefault()
@@ -490,14 +490,14 @@ namespace DequeNet.Unit
             Assert.False(deque.IsSynchronized);
         }
 
-        [Fact]
-        public void DequeCanBeCreatedFromCollection()
+        [Theory]
+        [PropertyData("PushItems")]
+        public void DequeCanBeCreatedFromCollection(int[] collection)
         {
-            var arr = new[] {1, 2, 3, 4};
-            var deque = new ConcurrentDeque<int>(arr);
+            var deque = new ConcurrentDeque<int>(collection);
 
-            Assert.Equal(arr, deque);
-            Assert.Equal(arr.Reverse(), deque.Reverse());
+            Assert.Equal(collection, deque);
+            Assert.Equal(collection.Reverse(), deque.Reverse());
         }
 
         [Fact]
