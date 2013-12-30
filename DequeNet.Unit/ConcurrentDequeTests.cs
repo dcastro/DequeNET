@@ -340,52 +340,6 @@ namespace DequeNet.Unit
         }
 
         [Fact]
-        public void ReverseEnumeratorReturnsPushedNodes()
-        {
-            //Arrange
-            var deque = new ConcurrentDeque<int>();
-            deque.PushRight(1);
-            deque.PushRight(2);
-            deque.PushRight(3);
-            deque.PushLeft(0);
-
-            //Act & Assert
-            Assert.Equal(new[] {3, 2, 1, 0}, deque.Reverse());
-        }
-
-        [Fact]
-        public void ReverseEnumeratorDoesNotReturnRightPoppedNodes()
-        {
-            //Arrange
-            var deque = new ConcurrentDeque<int>();
-            deque.PushRight(0);
-            deque.PushRight(1);
-            deque.PushRight(2);
-
-            int item;
-            deque.TryPopRight(out item);
-
-            //Act & Assert
-            Assert.Equal(new[] {1, 0}, deque.Reverse());
-        }
-
-        [Fact]
-        public void ReverseEnumeratorDoesNotReturnLeftPoppedNodes()
-        {
-            //Arrange
-            var deque = new ConcurrentDeque<int>();
-            deque.PushRight(0);
-            deque.PushRight(1);
-            deque.PushRight(2);
-
-            int item;
-            deque.TryPopLeft(out item);
-
-            //Act & Assert
-            Assert.Equal(new[] {2, 1}, deque.Reverse());
-        }
-
-        [Fact]
         public void ToArrayReturnsSnapshot()
         {
             //Arrange
@@ -497,7 +451,7 @@ namespace DequeNet.Unit
             var deque = new ConcurrentDeque<int>(collection);
 
             Assert.Equal(collection, deque);
-            Assert.Equal(collection.Reverse(), deque.Reverse());
+            Assert.Equal(collection.Reverse(), deque.GetNodesReverse().Select(n => n._value));
         }
 
         [Fact]
@@ -524,7 +478,7 @@ namespace DequeNet.Unit
             //assert equivalence
             Assert.NotNull(deserializedDeque);
             Assert.Equal(array, deserializedDeque);
-            Assert.Equal(array.Reverse(), deserializedDeque.Reverse());
+            Assert.Equal(array.Reverse(), deserializedDeque.GetNodesReverse().Select(n => n._value));
         }
 
         [Fact]

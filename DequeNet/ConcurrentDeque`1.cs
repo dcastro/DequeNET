@@ -507,30 +507,6 @@ namespace DequeNet
             }
         }
 
-        /// <summary>
-        /// Returns an enumerable sequence of the elements in the <see cref="ConcurrentDeque{T}"/> in reverse order.
-        /// </summary>
-        /// <returns>A reverse sequence of the elements in the <see cref="ConcurrentDeque{T}"/>.</returns>
-        /// <remarks>
-        /// The enumerable's enumerator iterates through the nodes in the deque from right to left and is safe to use concurrently with
-        /// reads and writes to the deque.
-        /// However, it does not represent a moment-in-time snapshot of the deque.
-        /// Items popped from the right end and items pushed onto the left end after <see cref="IEnumerable{T}.GetEnumerator"/> was called may be exposed through the enumerator.
-        /// Items popped from the left end and items pushed onto the the right end after <see cref="IEnumerable{T}.GetEnumerator"/> was called will not be exposed.
-        /// </remarks>
-        public IEnumerable<T> Reverse()
-        {
-            //fetch the rightmost node
-            var current = _anchor._right;
-
-            //Loop until we go out of bounds
-            while (current != null)
-            {
-                yield return current._value;
-                current = current._left;
-            }
-        }
-
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

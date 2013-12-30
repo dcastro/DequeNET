@@ -69,11 +69,5 @@ namespace DequeNet
         /// Removes all items from the <see cref="IConcurrentDeque{T}"/>.
         /// </summary>
         void Clear();
-
-        /// <summary>
-        /// Returns an enumerable sequence of the elements in the <see cref="IConcurrentDeque{T}"/> in reverse order.
-        /// </summary>
-        /// <returns>A reverse sequence of the elements in the <see cref="IConcurrentDeque{T}"/>.</returns>
-        IEnumerable<T> Reverse();
     }
 }
