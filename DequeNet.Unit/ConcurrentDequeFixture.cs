@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using Xunit;
 using DequeNet.Test.Common;
@@ -496,6 +498,33 @@ namespace DequeNet.Unit
 
             Assert.Equal(arr, deque);
             Assert.Equal(arr.Reverse(), deque.Reverse());
+        }
+
+        [Fact]
+        public void DequeCanBeSerialized()
+        {
+            //Arrange
+            var array = new[] {1,2,3};
+            var deque = new ConcurrentDeque<int>(array);
+
+            ConcurrentDeque<int> deserializedDeque = null;
+
+            //Act & Assert
+            using (var ms = new MemoryStream())
+            {
+                //serialize
+                var formatter = new BinaryFormatter();
+                Assert.DoesNotThrow(() => formatter.Serialize(ms, deque));
+
+                //deserialize
+                ms.Seek(0, SeekOrigin.Begin);
+                Assert.DoesNotThrow(() => deserializedDeque = formatter.Deserialize(ms) as ConcurrentDeque<int>);
+            }
+
+            //assert equivalence
+            Assert.NotNull(deserializedDeque);
+            Assert.Equal(array, deserializedDeque);
+            Assert.Equal(array.Reverse(), deserializedDeque.Reverse());
         }
 
         public static IEnumerable<object[]> PushItems

@@ -5,23 +5,30 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DequeNet.Debugging;
 
+//Disable "a reference to a volatile field will not be treated as volatile" warnings.
+//As per the MSDN documentation: "There are exceptions to this, such as when calling an interlocked API".
+#pragma warning disable 420
+
+// ReSharper disable InconsistentNaming
+
 namespace DequeNet
 {
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(typeof(ConcurrentDequeDebugView<>))] 
+    [Serializable]
     public class ConcurrentDeque<T> : IConcurrentDeque<T>
     {
-        //Disable "a reference to a volatile field will not be treated as volatile" warnings.
-        //As per the MSDN documentation: "There are exceptions to this, such as when calling an interlocked API".
-        #pragma warning disable 420
-
-        // ReSharper disable InconsistentNaming
+        [NonSerialized]
         internal volatile Anchor _anchor;
+
+        //Used for custom serialization
+        private T[] _serializationArray;
 
         public bool IsEmpty
         {
@@ -91,6 +98,26 @@ namespace DequeNet
                 _anchor = new Anchor();
             }
 
+        }
+
+        /// <summary> 
+        /// Get the data array to be serialized.
+        /// </summary> 
+        [OnSerializing]
+        private void OnSerializing(StreamingContext context)
+        {
+            // save the data into the serialization array to be saved 
+            _serializationArray = ToArray();
+        }
+
+        /// <summary>
+        /// Construct the deque from a previously serialized one.
+        /// </summary>
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            InitializeFromCollection(_serializationArray);
+            _serializationArray = null;
         }
         
         public void PushRight(T item)
@@ -736,8 +763,8 @@ namespace DequeNet
                 _value = value;
             }
         }
-
-        #pragma warning restore 420
-        // ReSharper restore InconsistentNaming
     }
 }
+
+#pragma warning restore 420
+// ReSharper restore InconsistentNaming
