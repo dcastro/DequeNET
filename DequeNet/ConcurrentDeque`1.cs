@@ -488,25 +488,28 @@ namespace DequeNet
         /// </summary>
         /// <returns>An enumerator for the <see cref="ConcurrentDeque{T}"/>.</returns>
         /// <remarks>
-        /// The enumerator iterates through the nodes in the deque from left to right and is safe to use concurrently with
-        /// reads and writes to the deque.
-        /// However, it does not represent a moment-in-time snapshot of the deque.
-        /// Items popped from the left end and items pushed onto the right end after <see cref="GetEnumerator"/> was called may be exposed through the enumerator.
-        /// Items popped from the right end and items pushed onto the the left end after <see cref="GetEnumerator"/> was called will not be exposed.
+        /// The enumeration represents a moment-in-time snapshot of the contents
+        /// of the deque. It does not reflect any updates to the collection after 
+        /// <see cref="GetEnumerator"/> was called. The enumerator is safe to use 
+        /// concurrently with reads from and writes to the deque.
         /// </remarks>
         public IEnumerator<T> GetEnumerator()
         {
-            //fetch the leftmost node
-            var current = _anchor._left;
-
-            //Loop until we go out of bounds
-            while (current != null)
-            {
-                yield return current._value;
-                current = current._right;
-            }
+            return ToList().GetEnumerator();
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="IEnumerator"/> object that can be used to iterate through the collection.
+        /// </returns>
+        /// <remarks>
+        /// The enumeration represents a moment-in-time snapshot of the contents
+        /// of the deque. It does not reflect any updates to the collection after 
+        /// <see cref="GetEnumerator"/> was called. The enumerator is safe to use 
+        /// concurrently with reads from and writes to the deque.
+        /// </remarks>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

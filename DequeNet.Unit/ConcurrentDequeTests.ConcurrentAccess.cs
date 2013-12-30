@@ -268,85 +268,35 @@ namespace DequeNet.Unit
         }
 
         [Fact]
-        public void EnumeratorIncludesItemsConcurrentlyPushedOntoTheRightEnd()
+        public void EnumeratorDoesNotIncludeConcurrentModifications()
         {
             //Arrange
-            var deque = new ConcurrentDeque<int>();
-            deque.PushRight(0);
-            deque.PushRight(1);
+            var arr = new[] {1, 2, 3};
+            var deque = new ConcurrentDeque<int>(arr);
+            int item;
 
             //Act
             var iterator = deque.GetEnumerator();
             iterator.MoveNext();
-            iterator.MoveNext();
-            deque.PushRight(2);
+
+            deque.TryPopLeft(out item);
+            deque.TryPopLeft(out item);
+            deque.PushLeft(6);
+
+            deque.TryPopRight(out item);
+            deque.PushRight(6);
 
             //Assert
+            Assert.Equal(1, iterator.Current);
+
             Assert.True(iterator.MoveNext());
             Assert.Equal(2, iterator.Current);
-        }
 
-
-        [Fact]
-        public void EnumeratorIncludesItemsConcurrentlyPoppedFromTheLeftEnd()
-        {
-            //Arrange
-            int item;
-            var deque = new ConcurrentDeque<int>();
-            deque.PushRight(0);
-            deque.PushRight(1);
-
-            //Act
-            var iterator = deque.GetEnumerator();
-            iterator.MoveNext();
-            deque.TryPopLeft(out item);
-            deque.TryPopLeft(out item);
-
-            //Assert
             Assert.True(iterator.MoveNext());
-            Assert.Equal(1, iterator.Current);
-        }
+            Assert.Equal(3, iterator.Current);
 
-        [Fact]
-        public void EnumeratorDoesntIncludeItemsConcurrentlyPushedOntoTheLeftEnd()
-        {
-            //Arrange
-            int item;
-            var deque = new ConcurrentDeque<int>();
-            deque.PushRight(0);
-            deque.PushRight(1);
-
-            //Act
-            var iterator = deque.GetEnumerator();
-            iterator.MoveNext();
-            deque.TryPopLeft(out item);
-            deque.TryPopLeft(out item);
-            deque.PushLeft(2);
-
-            //Assert
-            Assert.True(iterator.MoveNext());
-            Assert.Equal(1, iterator.Current);
             Assert.False(iterator.MoveNext());
         }
-
-        [Fact]
-        public void EnumeratorDoesntIncludeItemsConcurrentlyPoppedFromTheRightEnd()
-        {
-            //Arrange
-            var deque = new ConcurrentDeque<int>();
-            deque.PushRight(0);
-
-            //Act
-            var iterator = deque.GetEnumerator();
-            iterator.MoveNext();
-            deque.PushRight(1);
-
-            //Assert
-            Assert.True(iterator.MoveNext());
-            Assert.Equal(1, iterator.Current);
-            Assert.False(iterator.MoveNext());
-        }
-
         // ReSharper enable AccessToModifiedClosure
     }
 }

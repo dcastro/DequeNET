@@ -294,7 +294,7 @@ namespace DequeNet.Unit
         }
 
         [Fact]
-        public void EnumeratorReturnsPushedNodes()
+        public void EnumeratorReturnsTheDequesContent()
         {
             //Arrange
             var deque = new ConcurrentDeque<int>();
@@ -305,38 +305,6 @@ namespace DequeNet.Unit
 
             //Act & Assert
             Assert.Equal(new[] {0, 1, 2, 3}, deque);
-        }
-
-        [Fact]
-        public void EnumeratorDoesNotReturnRightPoppedNodes()
-        {
-            //Arrange
-            var deque = new ConcurrentDeque<int>();
-            deque.PushRight(0);
-            deque.PushRight(1);
-            deque.PushRight(2);
-
-            int item;
-            deque.TryPopRight(out item);
-
-            //Act & Assert
-            Assert.Equal(new[] {0, 1}, deque);
-        }
-
-        [Fact]
-        public void EnumeratorDoesNotReturnLeftPoppedNodes()
-        {
-            //Arrange
-            var deque = new ConcurrentDeque<int>();
-            deque.PushRight(0);
-            deque.PushRight(1);
-            deque.PushRight(2);
-
-            int item;
-            deque.TryPopLeft(out item);
-
-            //Act & Assert
-            Assert.Equal(new[] {1, 2}, deque);
         }
 
         [Fact]
