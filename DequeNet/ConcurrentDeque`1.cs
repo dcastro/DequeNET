@@ -19,6 +19,11 @@ using DequeNet.Debugging;
 
 namespace DequeNet
 {
+    /// <summary>
+    /// Represents a thread-safe lock-free concurrent double-ended queue, also known as deque (pronounced "deck").
+    /// Items can be appended to/removed from both ends of the deque.
+    /// </summary>
+    /// <typeparam name="T">Specifies the type of the elements in the deque.</typeparam>
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(typeof(ConcurrentDequeDebugView<>))] 
     [Serializable]
@@ -30,11 +35,17 @@ namespace DequeNet
         //Used for custom serialization
         private T[] _serializationArray;
 
+        /// <summary>
+        /// Gets a value that indicates whether the <see cref="ConcurrentDeque{T}"/> is empty.
+        /// </summary>
         public bool IsEmpty
         {
             get { return _anchor._left == null; }
         }
 
+        /// <summary>
+        /// Gets the number of elements contained in the <see cref="ConcurrentDeque{T}"/>.
+        /// </summary>
         public int Count
         {
             get { return ToList().Count; }
@@ -119,7 +130,11 @@ namespace DequeNet
             InitializeFromCollection(_serializationArray);
             _serializationArray = null;
         }
-        
+
+        /// <summary>
+        /// Adds an item to the right end of the <see cref="ConcurrentDeque{T}"/>.
+        /// </summary>
+        /// <param name="item">The item to be added to the <see cref="ConcurrentDeque{T}"/>.</param>
         public void PushRight(T item)
         {
             var newNode = new Node(item);
@@ -162,6 +177,10 @@ namespace DequeNet
             }
         }
 
+        /// <summary>
+        /// Adds an item to the left end of the <see cref="ConcurrentDeque{T}"/>.
+        /// </summary>
+        /// <param name="item">The item to be added to the <see cref="ConcurrentDeque{T}"/>.</param>
         public void PushLeft(T item)
         {
             var newNode = new Node(item);
@@ -204,6 +223,12 @@ namespace DequeNet
             }
         }
 
+        /// <summary>
+        /// Attempts to remove and return an item from the right end of the <see cref="ConcurrentDeque{T}"/>.
+        /// </summary>
+        /// <param name="item">When this method returns, if the operation was successful, <paramref name="item"/> contains the 
+        /// object removed. If no object was available to be removed, the value is unspecified.</param>
+        /// <returns>true if an element was removed and returned succesfully; otherwise, false.</returns>
         public bool TryPopRight(out T item)
         {
             Anchor anchor;
@@ -243,7 +268,7 @@ namespace DequeNet
             var node = anchor._right;
             item = node._value;
 
-            /**
+            /*
              * Try to set the new rightmost node's right pointer to null to avoid memory leaks.
              * We try only once - if CAS fails, then another thread must have pushed a new node, in which case we simply carry on.
              */
@@ -254,6 +279,12 @@ namespace DequeNet
             return true;
         }
 
+        /// <summary>
+        /// Attempts to remove and return an item from the left end of the <see cref="ConcurrentDeque{T}"/>.
+        /// </summary>
+        /// <param name="item">When this method returns, if the operation was successful, <paramref name="item"/> contains the 
+        /// object removed. If no object was available to be removed, the value is unspecified.</param>
+        /// <returns>true if an element was removed and returned succesfully; otherwise, false.</returns>
         public bool TryPopLeft(out T item)
         {
             Anchor anchor;
@@ -293,7 +324,7 @@ namespace DequeNet
             var node = anchor._left;
             item = node._value;
             
-            /**
+            /*
              * Try to set the new leftmost node's left pointer to null to avoid memory leaks.
              * We try only once - if CAS fails, then another thread must have pushed a new node, in which case we simply carry on.
              */
@@ -310,7 +341,7 @@ namespace DequeNet
         /// </summary>
         /// <param name="item">When this method returns, <paramref name="item"/> contains the rightmost item
         /// of the <see cref="ConcurrentDeque{T}"/> or an unspecified value if the operation failed.</param>
-        /// <returns>True if an item was returned successfully; otherwise, false.</returns>
+        /// <returns>true if an item was returned successfully; otherwise, false.</returns>
         public bool TryPeekRight(out T item)
         {
             var anchor = _anchor;
@@ -330,7 +361,7 @@ namespace DequeNet
         /// </summary>
         /// <param name="item">When this method returns, <paramref name="item"/> contains the leftmost item
         /// of the <see cref="ConcurrentDeque{T}"/> or an unspecified value if the operation failed.</param>
-        /// <returns>True if an item was returned successfully; otherwise, false.</returns>
+        /// <returns>true if an item was returned successfully; otherwise, false.</returns>
         public bool TryPeekLeft(out T item)
         {
             var anchor = _anchor;
@@ -377,7 +408,7 @@ namespace DequeNet
             //if the previous rightmost node doesn't point to the new rightmost node, we need to update it
             if (prevNext != newNode)
             {
-                /**
+                /*
                  * Quick check to see if the anchor has been updated by another thread.
                  * If it has been updated, we can't touch the prev node.
                  * Some other thread may have popped the new node, pushed another node and stabilized the deque.
@@ -392,7 +423,7 @@ namespace DequeNet
                     return;
             }
 
-            /**
+            /*
              * Try to mark the anchor as stable.
              * This step is done outside of the previous "if" block:
              *   even though another thread may have already updated prev's right pointer,
@@ -427,7 +458,7 @@ namespace DequeNet
             //if the previous leftmost node doesn't point to the new leftmost node, we need to update it
             if (prevNext != newNode)
             {
-                /**
+                /*
                  * Quick check to see if the anchor has been updated by another thread.
                  * If it has been updated, we can't touch the prev node.
                  * Some other thread may have popped the new node, pushed another node and stabilized the deque.
@@ -442,7 +473,7 @@ namespace DequeNet
                     return;
             }
 
-            /**
+            /*
              * Try to mark the anchor as stable.
              * This step is done outside of the previous "if" block:
              *   even though another thread may have already updated prev's left pointer,
@@ -510,7 +541,7 @@ namespace DequeNet
         /// </summary>
         public void Clear()
         {
-            /**
+            /*
              * Clear the list by setting the anchor to a new one
              * with null left and right pointers.
              */
@@ -708,7 +739,7 @@ namespace DequeNet
                 current = current._right;
             }
 
-            /**
+            /*
              * If the 'y' node hasn't been popped from the right side of the deque,
              * then we should still be able to find the original x-y sequence 
              * using a node's right pointer.
@@ -722,7 +753,7 @@ namespace DequeNet
                 return xaPath.Select(node => node._value).ToList();
             }
 
-            /**
+            /*
              * If the 'y' node has been popped from the right end, we need to find all nodes that have
              * been popped from the right end and rebuild the original sequence.
              * 
@@ -761,7 +792,7 @@ namespace DequeNet
             var common = current;
             ycPath.Push(common);
 
-            /**
+            /*
              * Merge the x->a and the y->c paths by the common node.
              * This is done by removing the nodes in x->a that come after c,
              * and appending all nodes in the y->c path in reverse order.
