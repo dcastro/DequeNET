@@ -466,6 +466,18 @@ namespace DequeNet
         }
 
         /// <summary>
+        /// Removes all objects from the <see cref="ConcurrentDeque{T}"/>.
+        /// </summary>
+        public void Clear()
+        {
+            /**
+             * Clear the list by setting the anchor to a new one
+             * with null left and right pointers.
+             */
+            _anchor = new Anchor();
+        }
+
+        /// <summary>
         /// Gets an object that can be used to synchronize access to the <see cref="ICollection"/>.
         /// </summary>
         /// <returns>

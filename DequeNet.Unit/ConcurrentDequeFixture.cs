@@ -527,6 +527,20 @@ namespace DequeNet.Unit
             Assert.Equal(array.Reverse(), deserializedDeque.Reverse());
         }
 
+        [Fact]
+        public void ClearRemovesAllItems()
+        {
+            //Arrange
+            var deque = new ConcurrentDeque<int>();
+            deque.PushLeft(5);
+
+            //Act
+            deque.Clear();
+
+            //Assert
+            Assert.True(deque.IsEmpty);
+        }
+
         public static IEnumerable<object[]> PushItems
         {
             get
