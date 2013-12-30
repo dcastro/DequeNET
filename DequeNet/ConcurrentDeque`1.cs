@@ -29,15 +29,65 @@ namespace DequeNet
             get { return ToList().Count; }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConcurrentDeque{T}"/> class.
+        /// </summary>
         public ConcurrentDeque()
         {
             _anchor = new Anchor();
         }
- 
-        public ConcurrentDeque(IEnumerable<T> items)
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConcurrentDeque{T}"/> class
+        /// that contains elements copied from the specified collection.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new <see cref="ConcurrentDeque{T}"/>.</param>
+        /// <exception cref="ArgumentNullException">
+        /// The <paramref name="collection"/> argument is null.c
+        /// </exception>
+        public ConcurrentDeque(IEnumerable<T> collection)
         {
-            throw new NotImplementedException();
-        }  
+            if (collection == null)
+                throw new ArgumentNullException("collection");
+
+            InitializeFromCollection(collection);
+        }
+
+        /// <summary>
+        /// Initialize the contents of the deque from an existing collection.
+        /// </summary>
+        /// <param name="collection">A collection from which to copy elements.</param>
+        private void InitializeFromCollection(IEnumerable<T> collection)
+        {
+            var iterator = collection.GetEnumerator();
+            if (iterator.MoveNext())
+            {
+                Node first = new Node(iterator.Current);
+                Node last = first;
+
+                while (iterator.MoveNext())
+                {
+                    //create node and assign pointers
+                    Node newLast = new Node(iterator.Current)
+                        {
+                            _left = last
+                        };
+                    last._right = newLast;
+
+                    //replace last node
+                    last = newLast;
+                }
+
+                //initialize anchor
+                _anchor = new Anchor(first, last, DequeStatus.Stable);
+            }
+            else
+            {
+                //collection is empty
+                _anchor = new Anchor();
+            }
+
+        }
         
         public void PushRight(T item)
         {
@@ -468,6 +518,9 @@ namespace DequeNet
         /// </exception> 
         void ICollection.CopyTo(Array array, int index)
         {
+            if (array == null)
+                throw new ArgumentNullException("array");
+
             // We must be careful not to corrupt the array, so we will first accumulate an 
             // internal list of elements that we will then copy to the array. This requires
             // some extra allocation, but is necessary since we don't know up front whether 
@@ -499,9 +552,7 @@ namespace DequeNet
         public void CopyTo(T[] array, int index)
         {
             if (array == null)
-            {
                 throw new ArgumentNullException("array");
-            }
 
             // We must be careful not to corrupt the array, so we will first accumulate an
             // internal list of elements that we will then copy to the array. This requires

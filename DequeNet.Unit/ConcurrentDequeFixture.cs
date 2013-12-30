@@ -488,6 +488,16 @@ namespace DequeNet.Unit
             Assert.False(deque.IsSynchronized);
         }
 
+        [Fact]
+        public void DequeCanBeCreatedFromCollection()
+        {
+            var arr = new[] {1, 2, 3, 4};
+            var deque = new ConcurrentDeque<int>(arr);
+
+            Assert.Equal(arr, deque);
+            Assert.Equal(arr.Reverse(), deque.Reverse());
+        }
+
         public static IEnumerable<object[]> PushItems
         {
             get
