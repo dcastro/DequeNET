@@ -384,8 +384,34 @@ namespace DequeNet
             return GetEnumerator();
         }
 
-        public object SyncRoot { get; private set; }
-        public bool IsSynchronized { get; private set; }
+        /// <summary>
+        /// Gets an object that can be used to synchronize access to the <see cref="ICollection"/>.
+        /// </summary>
+        /// <returns>
+        /// An object that can be used to synchronize access to the <see cref="ICollection"/>.
+        /// </returns>
+        /// <exception cref="NotSupportedException">The SyncRoot property is not supported.</exception>
+        object ICollection.SyncRoot
+        {
+            get { throw new NotSupportedException("The SyncRoot property may not be used for the synchronization of concurrent collections."); }
+        }
+
+
+        /// <summary>
+        /// Gets a value indicating whether access to the <see cref="ICollection"/> is synchronized (thread safe).
+        /// </summary>
+        /// <returns>
+        /// true if access to the <see cref="ICollection"/> is synchronized (thread safe); otherwise, false.
+        /// For <see cref="ConcurrentDeque{T}"/>, this property always returns false.
+        /// </returns>
+        bool ICollection.IsSynchronized
+        {
+            // Gets a value indicating whether access to this collection is synchronized. Always returns
+            // false. The reason is subtle. While access is in fact thread safe, it's not the case that 
+            // locking on the SyncRoot would have prevented concurrent pushes and pops, as this property 
+            // would typically indicate; that's because we internally use CAS operations vs. true locks.
+            get { return false; }
+        }
 
         /// <summary>
         /// Attempts to add an object to the <see cref="IProducerConsumerCollection{T}"/>.

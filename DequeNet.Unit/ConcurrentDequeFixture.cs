@@ -474,6 +474,20 @@ namespace DequeNet.Unit
             Assert.Equal(2, item);
         }
 
+        [Fact]
+        public void SyncRootIsNotSupported()
+        {
+            IProducerConsumerCollection<int> deque = new ConcurrentDeque<int>();
+            Assert.Throws<NotSupportedException>(() => deque.SyncRoot);
+        }
+
+        [Fact]
+        public void IsSynchronizedReturnsFalse()
+        {
+            IProducerConsumerCollection<int> deque = new ConcurrentDeque<int>();
+            Assert.False(deque.IsSynchronized);
+        }
+
         public static IEnumerable<object[]> PushItems
         {
             get
