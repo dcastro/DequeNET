@@ -2,14 +2,18 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DequeNet.Debugging;
 
 namespace DequeNet
 {
+    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerTypeProxy(typeof(ConcurrentDequeDebugView<>))] 
     public class ConcurrentDeque<T> : IConcurrentDeque<T>
     {
         //Disable "a reference to a volatile field will not be treated as volatile" warnings.
