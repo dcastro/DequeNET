@@ -344,11 +344,11 @@ namespace DequeNet
         /// <returns>true if an item was returned successfully; otherwise, false.</returns>
         public bool TryPeekRight(out T item)
         {
-            var anchor = _anchor;
+            var rightmostNode = _anchor._right;
 
-            if (anchor._right != null)
+            if (rightmostNode != null)
             {
-                item = anchor._right._value;
+                item = rightmostNode._value;
                 return true;
             }
             item = default(T);
@@ -364,11 +364,11 @@ namespace DequeNet
         /// <returns>true if an item was returned successfully; otherwise, false.</returns>
         public bool TryPeekLeft(out T item)
         {
-            var anchor = _anchor;
+            var leftmostNode = _anchor._left;
 
-            if (anchor._left != null)
+            if (leftmostNode != null)
             {
-                item = anchor._left._value;
+                item = leftmostNode._value;
                 return true;
             }
             item = default(T);
