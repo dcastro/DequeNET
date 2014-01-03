@@ -14,6 +14,8 @@ namespace DequeNet
     /// <typeparam name="T">Specifies the type of the elements in the deque.</typeparam>
     public class Deque<T> : IDeque<T>
     {
+        private const int DefaultCapacity = 4;
+
         private static readonly T[] EmptyBuffer = new T[0];
 
         /// <summary>
@@ -184,6 +186,24 @@ namespace DequeNet
             throw new NotImplementedException();
         }
 
+
+        /// <summary> 
+        /// Ensures that the capacity of this list is at least the given minimum
+        /// value. If the currect capacity of the list is less than min, the
+        /// capacity is increased to twice the current capacity or to min,
+        /// whichever is larger.
+        /// </summary>
+        /// <param name="min">The minimum capacity required.</param>
+        private void EnsureCapacity(int min)
+        {
+            if (Capacity < min)
+            {
+                var newCapacity = Capacity == 0 ? DefaultCapacity : Capacity*2;
+                newCapacity = Math.Max(newCapacity, min);
+                Capacity = newCapacity;
+            }
+        }
+
         /// <summary>
         /// Gets the number of elements contained in the <see cref="Deque{T}"/>.
         /// </summary>
@@ -206,15 +226,37 @@ namespace DequeNet
             get { return false; }
         }
 
-        private bool IsFull
-        {
-            get { return Count == Capacity; }
-        }
-
-        private int Capacity
+        /// <summary>
+        /// Gets or sets the total number of elements the internal data structure can hold without resizing.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException"><see cref="Capacity"/> cannot be set to a value less than <see cref="Count"/>.</exception>
+        public int Capacity
         {
             get { return _buffer.Length; }
-            set { throw new NotImplementedException(); }
+            set
+            {
+                var count = Count;
+                if (value < count)
+                    throw new ArgumentOutOfRangeException("value", "capacity was less than the current size.");
+
+                if (value == Capacity)
+                    return;
+
+                //if the elements are stored sequentially, copy the array as a whole
+                if (_high >= _low)
+                    Array.Resize(ref _buffer, value);
+                else
+                {
+                    //move the two parts together to a new array
+                    T[] newBuffer = new T[value];
+                    Array.Copy(_buffer, newBuffer, _high);
+                    Array.Copy(_buffer, _low, newBuffer, _high, Capacity - _low);
+                    
+                    _buffer = newBuffer;
+                    _low = 0;
+                    _high = count;
+                }
+            }
         }
     }
 }
