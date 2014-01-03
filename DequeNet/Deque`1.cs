@@ -14,12 +14,37 @@ namespace DequeNet
     /// <typeparam name="T">Specifies the type of the elements in the deque.</typeparam>
     public class Deque<T> : IDeque<T>
     {
+        private static readonly T[] EmptyBuffer = new T[0];
+
+        /// <summary>
+        /// Ring buffer that holds the items.
+        /// </summary>
+        private T[] _buffer;
+
+        /// <summary>
+        /// The offset used to calculate the position of the leftmost item in the buffer.
+        /// </summary>
+        private int _low;
+
+        /// <summary>
+        /// The offset used to calculate the position of the rightmost item in the buffer.
+        /// </summary>
+        private int _high;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Deque{T}"/> class.
+        /// </summary>
+        public Deque()
+        {
+            _buffer = EmptyBuffer;
+        }
+
         /// <summary>
         /// Gets a value that indicates whether the <see cref="Deque{T}"/> is empty.
         /// </summary>
         public bool IsEmpty
         {
-            get { throw new NotImplementedException(); }
+            get { return _high == _low; }
         }
 
         /// <summary>
@@ -167,12 +192,29 @@ namespace DequeNet
         /// </returns>
         public int Count
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                var diff = _high - _low;
+                if (diff < 0)
+                    return diff + Capacity;
+                return diff;
+            }
         }
 
         bool ICollection<T>.IsReadOnly
         {
             get { return false; }
+        }
+
+        private bool IsFull
+        {
+            get { return Count == Capacity; }
+        }
+
+        private int Capacity
+        {
+            get { return _buffer.Length; }
+            set { throw new NotImplementedException(); }
         }
     }
 }
