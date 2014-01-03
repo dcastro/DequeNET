@@ -120,7 +120,17 @@ namespace DequeNet
         /// <exception cref="InvalidOperationException">The deque is empty.</exception>
         public T PopRight()
         {
-            throw new NotImplementedException();
+            if (IsEmpty)
+                throw new InvalidOperationException("The deque is empty");
+
+            //dec count
+            Count--;
+
+            //retrieve rightmost item
+            var index = (_left + Count)%Capacity;
+            var item = _buffer[index];
+
+            return item;
         }
 
         /// <summary>
