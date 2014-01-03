@@ -52,8 +52,9 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="ConcurrentDequeTests.ConcurrentAccess.cs" />
-    <Compile Include="ConcurrentDequeTests.cs" />
+    <Compile Include="ConcurrentDeque\ConcurrentDequeTests.ConcurrentAccess.cs" />
+    <Compile Include="ConcurrentDeque\ConcurrentDequeTests.cs" />
+    <Compile Include="Deque\CapacityTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SnapshotAlgorithm.cs" />
   </ItemGroup>
@@ -70,6 +71,7 @@
       <Name>DequeNet</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

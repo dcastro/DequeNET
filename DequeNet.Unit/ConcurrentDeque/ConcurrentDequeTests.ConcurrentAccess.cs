@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using DequeNet.Test.Common;
 using Xunit;
-using Xunit.Extensions;
 
-namespace DequeNet.Unit
+namespace DequeNet.Unit.ConcurrentDeque
 {
     public partial class ConcurrentDequeTests
     {

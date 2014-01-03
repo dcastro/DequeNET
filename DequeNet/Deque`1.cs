@@ -26,12 +26,7 @@ namespace DequeNet
         /// <summary>
         /// The offset used to calculate the position of the leftmost item in the buffer.
         /// </summary>
-        private int _low;
-
-        /// <summary>
-        /// The offset used to calculate the position of the rightmost item in the buffer.
-        /// </summary>
-        private int _high;
+        private int _left;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Deque{T}"/> class.
@@ -46,7 +41,7 @@ namespace DequeNet
         /// </summary>
         public bool IsEmpty
         {
-            get { return _high == _low; }
+            get { return Count == 0; }
         }
 
         /// <summary>
@@ -55,7 +50,14 @@ namespace DequeNet
         /// <param name="item">The item to be added to the <see cref="Deque{T}"/>.</param>
         public void PushRight(T item)
         {
-            throw new NotImplementedException();
+            EnsureCapacity(Count + 1);
+
+            //insert item
+            var index = _left + Count%Capacity;
+            _buffer[index] = item;
+
+            //inc count
+            Count ++;
         }
 
         /// <summary>
@@ -84,7 +86,18 @@ namespace DequeNet
         /// <exception cref="InvalidOperationException">The deque is empty.</exception>
         public T PopLeft()
         {
-            throw new NotImplementedException();
+            if (IsEmpty)
+                throw new InvalidOperationException("The deque is empty");
+
+            //retrieve leftmost item
+            var item = _buffer[_left];
+            Count--;
+
+            //increment _left
+            _left++;
+            _left %= Capacity;
+
+            return item;
         }
 
         /// <summary>
@@ -125,7 +138,12 @@ namespace DequeNet
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            throw new NotImplementedException();
+
+            for (int i = 0; i < Count; i++)
+            {
+                var index = i%Capacity;
+                yield return _buffer[index];
+            }
         }
 
         /// <summary>
@@ -210,16 +228,7 @@ namespace DequeNet
         /// <returns>
         /// The number of elements contained in the <see cref="Deque{T}"/>.
         /// </returns>
-        public int Count
-        {
-            get
-            {
-                var diff = _high - _low;
-                if (diff < 0)
-                    return diff + Capacity;
-                return diff;
-            }
-        }
+        public int Count { get; private set; }
 
         bool ICollection<T>.IsReadOnly
         {
@@ -242,19 +251,18 @@ namespace DequeNet
                 if (value == Capacity)
                     return;
 
-                //if the elements are stored sequentially, copy the array as a whole
-                if (_high >= _low)
+                //if the elements are stored sequentially (i.e., left+count doesn't "overflow"), copy the array as a whole
+                if ((Capacity - _left) <= count)
                     Array.Resize(ref _buffer, value);
                 else
                 {
-                    //move the two parts together to a new array
+                    //copy both halves to a new array
                     T[] newBuffer = new T[value];
-                    Array.Copy(_buffer, newBuffer, _high);
-                    Array.Copy(_buffer, _low, newBuffer, _high, Capacity - _low);
+                    Array.Copy(_buffer, _left, newBuffer, 0, Capacity - _left);
+                    Array.Copy(_buffer, 0, newBuffer, Capacity - _left, _left + (count - Capacity));
                     
                     _buffer = newBuffer;
-                    _low = 0;
-                    _high = count;
+                    _left = 0;
                 }
             }
         }

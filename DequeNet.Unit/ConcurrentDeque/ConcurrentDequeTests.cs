@@ -2,16 +2,14 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using Xunit;
 using DequeNet.Test.Common;
 using Xunit.Extensions;
 
-namespace DequeNet.Unit
+namespace DequeNet.Unit.ConcurrentDeque
 {
     public partial class ConcurrentDequeTests
     {
