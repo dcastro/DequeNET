@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,6 +38,49 @@ namespace DequeNet
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Deque{T}"/> class with the specified capacity.
+        /// </summary>
+        /// <param name="capacity">The deque's initial capacity.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Capacity cannot be less than 0.</exception>
+        public Deque(int capacity)
+        {
+            if(capacity < 0)
+                throw new ArgumentOutOfRangeException("capacity", "capacity was less than zero.");
+
+            if (capacity == 0)
+                _buffer = EmptyBuffer;
+            else
+                _buffer = new T[capacity];
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Deque{T}"/> class that contains elements copied from the specified collection.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the deque.</param>
+        public Deque(IEnumerable<T> collection)
+        {
+            var capacity = collection.Count();
+            if (capacity == 0)
+                _buffer = EmptyBuffer;
+            else
+            {
+                _buffer = new T[capacity];
+
+                //copy to array
+                if (collection is ICollection<T>)
+                {
+                    (collection as ICollection<T>).CopyTo(_buffer, 0);
+                    Count = capacity;
+                }
+                else
+                {
+                    foreach (var item in collection)
+                        PushRight(item);
+                }
+            }
+        } 
+
+        /// <summary>
         /// Gets a value that indicates whether the <see cref="Deque{T}"/> is empty.
         /// </summary>
         public bool IsEmpty
@@ -53,7 +97,7 @@ namespace DequeNet
             EnsureCapacity(Count + 1);
 
             //insert item
-            var index = _left + Count%Capacity;
+            var index = (_left + Count)%Capacity;
             _buffer[index] = item;
 
             //inc count
@@ -141,7 +185,7 @@ namespace DequeNet
 
             for (int i = 0; i < Count; i++)
             {
-                var index = i%Capacity;
+                var index = (_left + i)%Capacity;
                 yield return _buffer[index];
             }
         }
@@ -251,19 +295,22 @@ namespace DequeNet
                 if (value == Capacity)
                     return;
 
+                T[] newBuffer = new T[value];
+
                 //if the elements are stored sequentially (i.e., left+count doesn't "overflow"), copy the array as a whole
-                if ((Capacity - _left) <= count)
-                    Array.Resize(ref _buffer, value);
+                if ((Capacity - _left) >= count)
+                {
+                    Array.Copy(_buffer, _left, newBuffer, 0, count);
+                }
                 else
                 {
                     //copy both halves to a new array
-                    T[] newBuffer = new T[value];
                     Array.Copy(_buffer, _left, newBuffer, 0, Capacity - _left);
                     Array.Copy(_buffer, 0, newBuffer, Capacity - _left, _left + (count - Capacity));
-                    
-                    _buffer = newBuffer;
-                    _left = 0;
                 }
+
+                _left = 0;
+                _buffer = newBuffer;
             }
         }
     }

@@ -55,6 +55,9 @@
     <Compile Include="ConcurrentDeque\ConcurrentDequeTests.ConcurrentAccess.cs" />
     <Compile Include="ConcurrentDeque\ConcurrentDequeTests.cs" />
     <Compile Include="Deque\CapacityTests.cs" />
+    <Compile Include="Deque\ConstructorTests.cs" />
+    <Compile Include="Deque\PopTests.cs" />
+    <Compile Include="Deque\PushTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SnapshotAlgorithm.cs" />
   </ItemGroup>
