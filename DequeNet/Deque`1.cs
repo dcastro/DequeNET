@@ -297,13 +297,38 @@ namespace DequeNet
         /// <param name="array">The one-dimensional <see cref="Array"/> that is the destination of the elements copied from <see cref="Deque{T}"/>. The <see cref="Array"/> must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
         /// <exception cref="ArgumentNullException"><paramref name="array"/> is null.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="arrayIndex"/> is less than 0.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="arrayIndex"/> is less than 0 or greater than the <paramref name="array"/>'s upper bound.</exception>
         /// <exception cref="ArgumentException">The number of elements in the source <see cref="Deque{T}"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
-            throw new NotImplementedException();
-        }
+            if(array == null)
+                throw new ArgumentNullException("array");
 
+            if(arrayIndex < 0)
+                throw new ArgumentOutOfRangeException("arrayIndex", "Index was less than the array's lower bound.");
+
+            if (arrayIndex >= array.Length)
+                throw new ArgumentOutOfRangeException("arrayIndex", "Index was greater than the array's upper bound.");
+
+            if (Count == 0)
+                return;
+
+            if(array.Length - arrayIndex < Count)
+                throw new ArgumentException("Destination array was not long enough");
+
+            //if the elements are stored sequentially (i.e., left+count doesn't "loop around" the array's boundary),
+            //copy the array as a whole
+            if (!LoopsAround)
+            {
+                Array.Copy(_buffer, Left, array, arrayIndex, Count);
+            }
+            else
+            {
+                //copy both halves to a new array
+                Array.Copy(_buffer, Left, array, arrayIndex, Capacity - Left);
+                Array.Copy(_buffer, 0, array, arrayIndex + Capacity - Left, Left + (Count - Capacity));
+            }
+        }
 
         /// <summary> 
         /// Ensures that the capacity of this list is at least the given minimum
@@ -353,17 +378,7 @@ namespace DequeNet
 
                 T[] newBuffer = new T[value];
 
-                //if the elements are stored sequentially (i.e., left+count doesn't "overflow"), copy the array as a whole
-                if (! LoopsAround)
-                {
-                    Array.Copy(_buffer, Left, newBuffer, 0, count);
-                }
-                else
-                {
-                    //copy both halves to a new array
-                    Array.Copy(_buffer, Left, newBuffer, 0, Capacity - Left);
-                    Array.Copy(_buffer, 0, newBuffer, Capacity - Left, Left + (count - Capacity));
-                }
+                CopyTo(newBuffer, 0);
 
                 Left = 0;
                 _buffer = newBuffer;

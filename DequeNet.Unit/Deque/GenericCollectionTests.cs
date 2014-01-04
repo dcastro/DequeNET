@@ -114,5 +114,68 @@ namespace DequeNet.Unit.Deque
             GC.KeepAlive(deque);
         }
 #endif
+
+        [Fact]
+        public void CopyTo_WithNullArray_ThrowsException()
+        {
+            var deque = new Deque<int>(new[] {1, 2, 3});
+            Assert.Throws<ArgumentNullException>(() => deque.CopyTo(null, 0));
+        }
+
+        [Fact]
+        public void CopyTo_WithNegativeIndex_ThrowsException()
+        {
+            var deque = new Deque<int>(new[] { 1, 2, 3 });
+            Assert.Throws<ArgumentOutOfRangeException>(() => deque.CopyTo(new int[1], -1));
+        }
+
+        [Fact]
+        public void CopyTo_WithIndexEqualToArrayLength_ThrowsException()
+        {
+            var deque = new Deque<int>(new[] { 1, 2, 3 });
+            Assert.Throws<ArgumentOutOfRangeException>(() => deque.CopyTo(new int[1], 1));
+        }
+
+        [Fact]
+        public void CopyTo_WithIndexGreaterThanArrayLength_ThrowsException()
+        {
+            var deque = new Deque<int>(new[] { 1, 2, 3 });
+            Assert.Throws<ArgumentOutOfRangeException>(() => deque.CopyTo(new int[1], 2));
+        }
+
+        [Fact]
+        public void CopyTo_ThrowsException_IfArrayIsntLongEnough()
+        {
+            var deque = new Deque<int>(new[] { 1, 2, 3 });
+            Assert.Throws<ArgumentException>(() => deque.CopyTo(new int[2], 0));
+            Assert.Throws<ArgumentException>(() => deque.CopyTo(new int[3], 1));
+        }
+
+        [Fact]
+        public void CopyTo_CopiesDequesContent()
+        {
+            var deque = new Deque<string>(new[] { "1", "2", "3" });
+            var array = new string[5];
+            deque.CopyTo(array, 1);
+
+            Assert.Null(array[0]);
+            Assert.Null(array[4]);
+            Assert.Equal(array.Skip(1).Take(3), deque);
+        }   
+        
+        [Fact]
+        public void CopyTo_CopiesDequesContent_WhenDequeLoopsAround()
+        {
+            var deque = new Deque<string>(new[] { "1", "2", "3" });
+            deque.PopRight();
+            deque.PushLeft("0");
+
+            var array = new string[5];
+            deque.CopyTo(array, 1);
+
+            Assert.Null(array[0]);
+            Assert.Null(array[4]);
+            Assert.Equal(array.Skip(1).Take(3), deque);
+        }
     }
 }
