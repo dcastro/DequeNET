@@ -237,9 +237,10 @@ namespace DequeNet
         /// Adds an item to the <see cref="ICollection{T}"/>.
         /// </summary>
         /// <param name="item">The object to add to the <see cref="ICollection{T}"/>.</param>
+        /// <remarks>For <see cref="Deque{T}"/>, this operation will add the item to the right end of the deque.</remarks>
         void ICollection<T>.Add(T item)
         {
-            throw new NotImplementedException();
+            PushRight(item);
         }
 
         /// <summary>
@@ -264,7 +265,7 @@ namespace DequeNet
         /// <param name="item">The object to locate in the <see cref="Deque{T}"/>.</param>
         public bool Contains(T item)
         {
-            throw new NotImplementedException();
+            return Enumerable.Contains(this, item, EqualityComparer<T>.Default);
         }
 
         /// <summary>
