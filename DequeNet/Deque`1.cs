@@ -173,7 +173,14 @@ namespace DequeNet
         /// <exception cref="InvalidOperationException">The deque is empty.</exception>
         public T PeekRight()
         {
-            throw new NotImplementedException();
+            if (IsEmpty)
+                throw new InvalidOperationException("The deque is empty");
+
+            //retrieve rightmost item
+            var index = (_left + Count - 1) % Capacity;
+            var item = _buffer[index];
+
+            return item;
         }
 
         /// <summary>
@@ -184,7 +191,11 @@ namespace DequeNet
         /// <exception cref="InvalidOperationException">The deque is empty.</exception>
         public T PeekLeft()
         {
-            throw new NotImplementedException();
+            if (IsEmpty)
+                throw new InvalidOperationException("The deque is empty");
+
+            //retrieve leftmost item
+            return _buffer[_left];
         }
 
         /// <summary>
