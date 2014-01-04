@@ -30,18 +30,22 @@ namespace DequeNet.Unit.Extensions
             {
                 yield return new object[] {1, 1, 0};
                 yield return new object[] {0, 1, 0};
+                yield return new object[] {-5, 5, 0};
+                yield return new object[] {-5, -5, 0};
+                yield return new object[] {5, -5, 0};
+                yield return new object[] {5, 5, 0};
                 yield return new object[] {2, 10, 2};
                 yield return new object[] {12, 10, 2};
                 yield return new object[] {22, 10, 2};
                 yield return new object[] {-2, 10, 8};
                 yield return new object[] {-12, 10, 8};
                 yield return new object[] {-22, 10, 8};
-                yield return new object[] { 2, -10, -8 };
-                yield return new object[] { 12, -10, -8 };
-                yield return new object[] { 22, -10, -8 };
-                yield return new object[] { -2, -10, -2 };
-                yield return new object[] { -12, -10, -2 };
-                yield return new object[] { -22, -10, -2 };
+                yield return new object[] {2, -10, -8};
+                yield return new object[] {12, -10, -8};
+                yield return new object[] {22, -10, -8};
+                yield return new object[] {-2, -10, -2};
+                yield return new object[] {-12, -10, -2};
+                yield return new object[] {-22, -10, -2};
             }
         }
     }
