@@ -142,6 +142,9 @@ namespace DequeNet
             var index = (_left + Count)%Capacity;
             var item = _buffer[index];
 
+            //clean reference
+            _buffer[index] = default(T);
+
             return item;
         }
 
@@ -158,6 +161,9 @@ namespace DequeNet
             //retrieve leftmost item
             var item = _buffer[_left];
             Count--;
+            
+            //clean reference
+            _buffer[_left] = default(T);
 
             //increment _left
             _left++;
