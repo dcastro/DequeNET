@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DequeNet.Extensions;
 
 namespace DequeNet
 {
@@ -36,6 +38,12 @@ namespace DequeNet
         public Deque()
         {
             _buffer = EmptyBuffer;
+        }
+
+        private int Left
+        {
+            get { return _left; }
+            set { _left = ToIndex(value); }
         }
 
         /// <summary>
@@ -98,7 +106,7 @@ namespace DequeNet
             EnsureCapacity(Count + 1);
 
             //insert item
-            var index = (_left + Count)%Capacity;
+            var index = ToIndex(Left + Count);
             _buffer[index] = item;
 
             //inc count
@@ -113,13 +121,11 @@ namespace DequeNet
         {
             EnsureCapacity(Count + 1);
 
-            //decrement _left
-            _left--;
-            if (_left < 0)
-                _left += Capacity;
+            //decrement left
+            Left --;
 
             //insert item
-            _buffer[_left] = item;
+            _buffer[Left] = item;
 
             //inc count
             Count ++;
@@ -139,7 +145,7 @@ namespace DequeNet
             Count--;
 
             //retrieve rightmost item
-            var index = (_left + Count)%Capacity;
+            var index = ToIndex(Left + Count);
             var item = _buffer[index];
 
             //clean reference
@@ -159,15 +165,14 @@ namespace DequeNet
                 throw new InvalidOperationException("The deque is empty");
 
             //retrieve leftmost item
-            var item = _buffer[_left];
+            var item = _buffer[Left];
             Count--;
             
             //clean reference
-            _buffer[_left] = default(T);
+            _buffer[Left] = default(T);
 
-            //increment _left
-            _left++;
-            _left %= Capacity;
+            //increment left
+            Left++;
 
             return item;
         }
@@ -184,7 +189,7 @@ namespace DequeNet
                 throw new InvalidOperationException("The deque is empty");
 
             //retrieve rightmost item
-            var index = (_left + Count - 1) % Capacity;
+            var index = ToIndex(Left + Count - 1);
             var item = _buffer[index];
 
             return item;
@@ -202,7 +207,7 @@ namespace DequeNet
                 throw new InvalidOperationException("The deque is empty");
 
             //retrieve leftmost item
-            return _buffer[_left];
+            return _buffer[Left];
         }
 
         /// <summary>
@@ -214,14 +219,14 @@ namespace DequeNet
             if (LoopsAround)
             {
                 //clear both halves
-                Array.Clear(_buffer, _left, Capacity - _left);
-                Array.Clear(_buffer, 0, _left + (Count - Capacity));
+                Array.Clear(_buffer, Left, Capacity - Left);
+                Array.Clear(_buffer, 0, Left + (Count - Capacity));
             }
             else //clear the whole array
-                Array.Clear(_buffer, _left, Count);
+                Array.Clear(_buffer, Left, Count);
 
             Count = 0;
-            _left = 0;
+            Left = 0;
         }
 
         /// <summary>
@@ -235,7 +240,7 @@ namespace DequeNet
 
             for (int i = 0; i < Count; i++)
             {
-                var index = (_left + i)%Capacity;
+                var index = ToIndex(Left + i);
                 yield return _buffer[index];
             }
         }
@@ -351,16 +356,16 @@ namespace DequeNet
                 //if the elements are stored sequentially (i.e., left+count doesn't "overflow"), copy the array as a whole
                 if (! LoopsAround)
                 {
-                    Array.Copy(_buffer, _left, newBuffer, 0, count);
+                    Array.Copy(_buffer, Left, newBuffer, 0, count);
                 }
                 else
                 {
                     //copy both halves to a new array
-                    Array.Copy(_buffer, _left, newBuffer, 0, Capacity - _left);
-                    Array.Copy(_buffer, 0, newBuffer, Capacity - _left, _left + (count - Capacity));
+                    Array.Copy(_buffer, Left, newBuffer, 0, Capacity - Left);
+                    Array.Copy(_buffer, 0, newBuffer, Capacity - Left, Left + (count - Capacity));
                 }
 
-                _left = 0;
+                Left = 0;
                 _buffer = newBuffer;
             }
         }
@@ -373,8 +378,25 @@ namespace DequeNet
         {
             get
             {
-                return Count > (Capacity - _left);
+                return Count > (Capacity - Left);
             }
+        }
+
+        /// <summary>
+        /// Calculates the ring buffer index for a given position in the deque using modular arithmetic.
+        /// </summary>
+        /// <param name="position">The position in the deque.</param>
+        /// <returns>The ring buffer index.</returns>
+        public int ToIndex(int position)
+        {
+            //put 'position' in the range [0, Capacity-1] using modular arithmetic
+            if (Capacity != 0)
+                return position.Mod(Capacity);
+
+            //if capacity is 0, _left must always be 0
+            Contract.Assert(_left == 0);
+
+            return 0;
         }
     }
 }

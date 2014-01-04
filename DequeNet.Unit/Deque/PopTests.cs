@@ -44,9 +44,6 @@ namespace DequeNet.Unit.Deque
             var deque = new Deque<object>(new[] {obj1, new object(), new object()});
             deque.PopLeft();
 
-            //clean local strong references
-            obj1 = null;
-
             //assert that all strong references to the object have been cleaned
             GC.Collect();
             Assert.False(ref1.IsAlive);
@@ -90,9 +87,6 @@ namespace DequeNet.Unit.Deque
 
             var deque = new Deque<object>(new[] {new object(), new object(), obj1});
             deque.PopRight();
-
-            //clean local strong references
-            obj1 = null;
 
             //assert that all strong references to the object have been cleaned
             GC.Collect();

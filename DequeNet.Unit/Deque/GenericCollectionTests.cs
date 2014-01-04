@@ -67,9 +67,6 @@ namespace DequeNet.Unit.Deque
 
             var deque = new Deque<object>(new[] {obj1, obj2});
 
-            //clean local strong references
-            obj1 = obj2 = null;
-
             deque.Clear();
             
             //assert that all strong references to the two objects have been cleaned
@@ -79,8 +76,8 @@ namespace DequeNet.Unit.Deque
 
             /*
              * Make sure the GC doesn't clean the deque and all its references before this.
-             * If it did, the above assertions could be "false positives" - the references could have been cleaned
-             * not because Deque<T>.Clear worked, but because the local "deque" variable is not used after the call.
+             * If it did, the above assertions could be "false positives" - the references could have been collected
+             * not because Deque<T>.Clear worked, but because the deque itself was collected.
              */
             GC.KeepAlive(deque);
         }
@@ -103,9 +100,6 @@ namespace DequeNet.Unit.Deque
             var deque = new Deque<object>(new[] {obj1, obj2, obj3});
             deque.PopLeft();
             deque.PushRight(obj4);
-
-            //clean local strong references
-            obj1 = obj2 = obj3 = obj4 = null;
 
             deque.Clear();
 
