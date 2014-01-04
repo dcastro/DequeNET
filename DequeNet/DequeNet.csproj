@@ -43,6 +43,7 @@
     <Compile Include="ConcurrentDeque`1.cs" />
     <Compile Include="Debugging\ConcurrentDequeDebugView`1.cs" />
     <Compile Include="Deque`1.cs" />
+    <Compile Include="Extensions\IntExtensions.cs" />
     <Compile Include="IConcurrentDeque`1.cs" />
     <Compile Include="IDeque`1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

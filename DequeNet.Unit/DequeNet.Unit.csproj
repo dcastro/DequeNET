@@ -60,6 +60,7 @@
     <Compile Include="Deque\PeekTests.cs" />
     <Compile Include="Deque\PopTests.cs" />
     <Compile Include="Deque\PushTests.cs" />
+    <Compile Include="Extensions\IntExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SnapshotAlgorithm.cs" />
   </ItemGroup>
