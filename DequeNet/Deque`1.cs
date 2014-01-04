@@ -110,7 +110,18 @@ namespace DequeNet
         /// <param name="item">The item to be added to the <see cref="Deque{T}"/>.</param>
         public void PushLeft(T item)
         {
-            throw new NotImplementedException();
+            EnsureCapacity(Count + 1);
+
+            //decrement _left
+            _left--;
+            if (_left < 0)
+                _left += Capacity;
+
+            //insert item
+            _buffer[_left] = item;
+
+            //inc count
+            Count ++;
         }
 
         /// <summary>

@@ -61,5 +61,58 @@ namespace DequeNet.Unit.Deque
             Assert.Equal(3, deque.Capacity);
             Assert.Equal(new[] {2, 3, 4}, deque);
         }
+
+        [Fact]
+        public void PushLeft_AppendsItemToTheLeftEnd()
+        {
+            var deque = new Deque<int>();
+            deque.PushLeft(1);
+            deque.PushLeft(2);
+            deque.PushLeft(3);
+
+            Assert.Equal(new[] {3, 2, 1}, deque);
+        }
+
+        [Fact]
+        public void PushLeft_ToEmptyDeque_IncreasesCapacity()
+        {
+            var deque = new Deque<int>();
+            deque.PushLeft(5);
+
+            Assert.Equal(4, deque.Capacity);
+        }
+
+        [Fact]
+        public void PushLeft_DoublesCapacity()
+        {
+            var deque = new Deque<int>();
+
+            for (int i = 0; i < 5; i++)
+                deque.PushLeft(5);
+
+            Assert.Equal(8, deque.Capacity);
+        }
+
+        [Fact]
+        public void PushLeft_IncreasesCount()
+        {
+            var deque = new Deque<int>();
+
+            for (int i = 0; i < 5; i++)
+                deque.PushLeft(5);
+
+            Assert.Equal(5, deque.Count);
+        }
+
+        [Fact]
+        public void PushLeft_LoopsAroundBuffer()
+        {
+            var deque = new Deque<int>(new[] {1, 2, 3});
+            deque.PopRight();
+            deque.PushLeft(0);
+
+            Assert.Equal(3, deque.Capacity);
+            Assert.Equal(new[] {0, 1, 2}, deque);
+        }
     }
 }
