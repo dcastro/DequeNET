@@ -55,6 +55,7 @@ namespace DequeNet.Unit.Deque
             Assert.Equal(6, deque.Capacity);
         }
 
+#if !DEBUG 
         [Fact]
         public void Clear_PurgesReferences()
         {
@@ -83,7 +84,9 @@ namespace DequeNet.Unit.Deque
              */
             GC.KeepAlive(deque);
         }
+#endif
 
+#if !DEBUG 
         [Fact]
         public void Clear_PurgesReferences_WhenDequeLoopsAround()
         {
@@ -116,5 +119,6 @@ namespace DequeNet.Unit.Deque
             //Make sure the GC doesn't clean the deque and all its references before this.
             GC.KeepAlive(deque);
         }
+#endif
     }
 }

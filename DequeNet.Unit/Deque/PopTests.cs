@@ -34,6 +34,7 @@ namespace DequeNet.Unit.Deque
             Assert.Equal(2, deque.Count);
         }
 
+#if !DEBUG 
         [Fact]
         public void PopLeft_ClearsReference()
         {
@@ -53,6 +54,7 @@ namespace DequeNet.Unit.Deque
             //Make sure the GC doesn't clean the deque and all its references before this.
             GC.KeepAlive(deque);
         }
+#endif
 
         [Fact]
         public void PopRight_ThrowsException_WhenEmpty()
@@ -79,6 +81,7 @@ namespace DequeNet.Unit.Deque
             Assert.Equal(2, deque.Count);
         }
 
+#if !DEBUG 
         [Fact]
         public void PopRight_ClearsReference()
         {
@@ -98,5 +101,6 @@ namespace DequeNet.Unit.Deque
             //Make sure the GC doesn't clean the deque and all its references before this.
             GC.KeepAlive(deque);
         }
+#endif
     }
 }
