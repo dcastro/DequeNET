@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -203,7 +204,18 @@ namespace DequeNet
         /// </summary>
         public void Clear()
         {
-            throw new NotImplementedException();
+            //clear the ring buffer to allow the GC to reclaim the references
+            if (LoopsAround)
+            {
+                //clear both halves
+                Array.Clear(_buffer, _left, Capacity - _left);
+                Array.Clear(_buffer, 0, _left + (Count - Capacity));
+            }
+            else //clear the whole array
+                Array.Clear(_buffer, _left, Count);
+
+            Count = 0;
+            _left = 0;
         }
 
         /// <summary>
@@ -331,7 +343,7 @@ namespace DequeNet
                 T[] newBuffer = new T[value];
 
                 //if the elements are stored sequentially (i.e., left+count doesn't "overflow"), copy the array as a whole
-                if ((Capacity - _left) >= count)
+                if (! LoopsAround)
                 {
                     Array.Copy(_buffer, _left, newBuffer, 0, count);
                 }
@@ -344,6 +356,18 @@ namespace DequeNet
 
                 _left = 0;
                 _buffer = newBuffer;
+            }
+        }
+
+        /// <summary>
+        /// Determines whether the deque "loops around" the array's boundary, i.e., whether the rightmost's index is lower than the leftmost's.
+        /// </summary>
+        /// <returns>true if the deque loops around the array's boundary; false otherwise.</returns>
+        public bool LoopsAround
+        {
+            get
+            {
+                return Count > (Capacity - _left);
             }
         }
     }
