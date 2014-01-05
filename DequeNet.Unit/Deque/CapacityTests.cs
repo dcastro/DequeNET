@@ -58,6 +58,19 @@ namespace DequeNet.Unit.Deque
             deque.Capacity = 3;
 
             Assert.Equal(new[]{3,4,5}, deque);
-        } 
+        }
+
+        [Fact]
+        public void TrimExcess_CompactsCapacity()
+        {
+            var deque = new Deque<int>(new[] {1, 2, 3});
+            deque.PushRight(4);
+
+            Assert.True(deque.Capacity > 4);
+
+            deque.TrimExcess();
+
+            Assert.Equal(4, deque.Capacity);
+        }
     }
 }

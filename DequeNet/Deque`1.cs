@@ -395,6 +395,19 @@ namespace DequeNet
             }
         }
 
+        /// <summary>
+        /// Sets the capacity to the actual number of elements in the <see cref="Deque{T}"/>.
+        /// </summary>
+        /// <remarks>
+        /// This method can be used to minimize a deque's memory overhead once it is known that no
+        /// new elements will be added to the deque. To completely clear a deque and
+        /// release all memory referenced by the deque, execute <see cref="Clear"/> followed by <see cref="TrimExcess"/>.
+        /// </remarks>
+        public void TrimExcess()
+        {
+            Capacity = Count;
+        }
+
         /// <summary> 
         /// Ensures that the capacity of this list is at least the given minimum
         /// value. If the currect capacity of the list is less than min, the
@@ -454,7 +467,7 @@ namespace DequeNet
         /// Determines whether the deque "loops around" the array's boundary, i.e., whether the rightmost's index is lower than the leftmost's.
         /// </summary>
         /// <returns>true if the deque loops around the array's boundary; false otherwise.</returns>
-        public bool LoopsAround
+        private bool LoopsAround
         {
             get
             {
@@ -468,7 +481,7 @@ namespace DequeNet
         /// </summary>
         /// <param name="position">The index.</param>
         /// <returns>The ring buffer index.</returns>
-        public int ToIndex(int position)
+        private int ToIndex(int position)
         {
             //put 'position' in the range [0, Capacity-1] using modular arithmetic
             if (Capacity != 0)
