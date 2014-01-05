@@ -177,5 +177,70 @@ namespace DequeNet.Unit.Deque
             Assert.Null(array[4]);
             Assert.Equal(array.Skip(1).Take(3), deque);
         }
+
+        [Fact]
+        public void Remove_UnknownItem_ThrowsException()
+        {
+            ICollection<int> deque = new Deque<int>(new[] {2, 3, 4});
+            Assert.False(deque.Remove(5));
+        }
+
+        [Fact]
+        public void Remove_LeftmostItem_RemovesItem()
+        {
+            ICollection<int> deque = new Deque<int>(new[] {2, 3, 4});
+
+            Assert.True(deque.Remove(2));
+            Assert.Equal(new[] {3, 4}, deque as IEnumerable<int>);
+        }
+
+        [Fact]
+        public void Remove_RightmostItem_RemovesItem()
+        {
+            ICollection<int> deque = new Deque<int>(new[] {2, 3, 4});
+
+            Assert.True(deque.Remove(4));
+            Assert.Equal(new[] {2, 3}, deque as IEnumerable<int>);
+        }
+
+        [Fact]
+        public void Remove_ItemTowardsTheLeftEnd_RemovesItem()
+        {
+            ICollection<int> deque = new Deque<int>(new[] {2, 3, 4, 5, 6, 7});
+
+            Assert.True(deque.Remove(4));
+            Assert.Equal(new[] {2, 3, 5, 6, 7}, deque as IEnumerable<int>);
+        }
+
+        [Fact]
+        public void Remove_ItemTowardsTheLeftEnd_RemovesItem_WhenDequeLoopsAround()
+        {
+            var deque = new Deque<int>(new[] {2, 3, 4, 5, 6, 7});
+            deque.PopRight();
+            deque.PushLeft(1);
+
+            Assert.True((deque as ICollection<int>).Remove(3));
+            Assert.Equal(new[] {1, 2, 4, 5, 6}, deque);
+        }
+
+        [Fact]
+        public void Remove_ItemTowardsTheRightEnd_RemovesItem()
+        {
+            ICollection<int> deque = new Deque<int>(new[] {2, 3, 4, 5, 6, 7});
+
+            Assert.True(deque.Remove(5));
+            Assert.Equal(new[] {2, 3, 4, 6, 7}, deque as IEnumerable<int>);
+        }
+
+        [Fact]
+        public void Remove_ItemTowardsTheRightEnd_RemovesItem_WhenDequeLoopsAround()
+        {
+            var deque = new Deque<int>(new[] {2, 3, 4, 5, 6, 7});
+            deque.PopLeft();
+            deque.PushRight(8);
+
+            Assert.True((deque as ICollection<int>).Remove(6));
+            Assert.Equal(new[] {3, 4, 5, 7, 8}, deque);
+        }
     }
 }

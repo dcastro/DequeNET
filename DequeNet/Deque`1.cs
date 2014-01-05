@@ -276,7 +276,72 @@ namespace DequeNet
         /// <param name="item">The object to remove from the <see cref="ICollection{T}"/>.</param>
         bool ICollection<T>.Remove(T item)
         {
-            throw new NotImplementedException();
+            //find the index of the item to be removed in the deque
+            var comp = EqualityComparer<T>.Default;
+            int dequeIndex = -1;
+            int counter = 0;
+            foreach (var dequeItem in this)
+            {
+                if (comp.Equals(item, dequeItem))
+                {
+                    dequeIndex = counter;
+                    break;
+                }
+                counter++;
+            }
+
+            //return false if the item wasn't found
+            if (dequeIndex == -1)
+                return false;
+
+            //if the removal should be performed on one of the ends, use the corresponding Pop operation instead
+            if (dequeIndex == 0)
+                PopLeft();
+            else if (dequeIndex == Count - 1)
+                PopRight();
+            else
+            {
+                if (dequeIndex < Count/2) //If the item is located towards the left end of the deque
+                {
+                    //move the items to the left of 'item' one index to the right
+                    for (int i = dequeIndex - 1; i >= 0; i--)
+                    {
+                        //calculate array indexes
+                        int sourceIndex = ToIndex(Left + i);
+                        int destinationIndex = ToIndex(sourceIndex + 1);
+
+                        _buffer[destinationIndex] = _buffer[sourceIndex];
+                    }
+
+                    //clean first item
+                    _buffer[Left] = default(T);
+
+                    //increase left
+                    Left ++;
+                    Count --;
+                }
+                else //If the item is located towards the right end of the deque
+                {
+                    //move the items to the right of 'item' one index to the left
+                    for (int i = dequeIndex + 1; i < Count; i++)
+                    {
+                        //calculate array indexes
+                        int sourceIndex = ToIndex(Left + i);
+                        int destinationIndex = ToIndex(sourceIndex - 1);
+
+                        _buffer[destinationIndex] = _buffer[sourceIndex];
+                    }
+
+                    //clean last item
+                    var lastItemIndex = ToIndex(Left + Count - 1);
+                    _buffer[lastItemIndex] = default(T);
+
+                    //decrease count
+                    Count--;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -398,9 +463,10 @@ namespace DequeNet
         }
 
         /// <summary>
-        /// Calculates the ring buffer index for a given position in the deque using modular arithmetic.
+        /// Uses modular arithmetic to calculate the correct ring buffer index for a given index.
+        /// If <paramref name="position"/> is over the array's upper boundary, the returned index "wraps/loops around" the upper boundary.
         /// </summary>
-        /// <param name="position">The position in the deque.</param>
+        /// <param name="position">The index.</param>
         /// <returns>The ring buffer index.</returns>
         public int ToIndex(int position)
         {
