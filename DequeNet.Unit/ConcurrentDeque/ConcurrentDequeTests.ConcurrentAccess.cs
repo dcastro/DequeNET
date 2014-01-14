@@ -261,37 +261,6 @@ namespace DequeNet.Unit.ConcurrentDeque
             Assert.True(remainingNodes > 0);
             Assert.Equal(initialCount - popCount, remainingNodes);
         }
-
-        [Fact]
-        public void EnumeratorDoesNotIncludeConcurrentModifications()
-        {
-            //Arrange
-            var arr = new[] {1, 2, 3};
-            var deque = new ConcurrentDeque<int>(arr);
-            int item;
-
-            //Act
-            var iterator = deque.GetEnumerator();
-            iterator.MoveNext();
-
-            deque.TryPopLeft(out item);
-            deque.TryPopLeft(out item);
-            deque.PushLeft(6);
-
-            deque.TryPopRight(out item);
-            deque.PushRight(6);
-
-            //Assert
-            Assert.Equal(1, iterator.Current);
-
-            Assert.True(iterator.MoveNext());
-            Assert.Equal(2, iterator.Current);
-
-            Assert.True(iterator.MoveNext());
-            Assert.Equal(3, iterator.Current);
-
-            Assert.False(iterator.MoveNext());
-        }
         // ReSharper enable AccessToModifiedClosure
     }
 }

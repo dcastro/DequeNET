@@ -54,6 +54,12 @@
   <ItemGroup>
     <Compile Include="ConcurrentDeque\ConcurrentDequeTests.ConcurrentAccess.cs" />
     <Compile Include="ConcurrentDeque\ConcurrentDequeTests.cs" />
+    <Compile Include="ConcurrentDeque\Internal\ConstructorTests.cs" />
+    <Compile Include="ConcurrentDeque\IsEmptyTests.cs" />
+    <Compile Include="ConcurrentDeque\Internal\PushTests.cs" />
+    <Compile Include="ConcurrentDeque\TryPeekTests.cs" />
+    <Compile Include="ConcurrentDeque\TryPopTests.cs" />
+    <Compile Include="ConcurrentDeque\ProducerConsumerCollectionTests.cs" />
     <Compile Include="Deque\CapacityTests.cs" />
     <Compile Include="Deque\ConstructorTests.cs" />
     <Compile Include="Deque\GenericCollectionTests.cs" />
@@ -63,7 +69,7 @@
     <Compile Include="Deque\StressTests.cs" />
     <Compile Include="Extensions\IntExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ConcurrentDeque\SnapshotAlgorithm.cs" />
+    <Compile Include="ConcurrentDeque\SnapshotAlgorithmTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

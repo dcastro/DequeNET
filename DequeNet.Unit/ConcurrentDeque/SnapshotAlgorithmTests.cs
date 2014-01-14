@@ -7,7 +7,7 @@ using Xunit.Extensions;
 
 namespace DequeNet.Unit.ConcurrentDeque
 {
-    public class SnapshotAlgorithm
+    public class SnapshotAlgorithmTests
     {
         private const int PopLeft = 0;
         private const int PopRight = 1;
