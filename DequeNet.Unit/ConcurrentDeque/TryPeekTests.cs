@@ -17,7 +17,7 @@ namespace DequeNet.Unit.ConcurrentDeque
             int item;
             Assert.True(deque.TryPeekRight(out item));
             Assert.Equal(3, item);
-            Assert.True(deque.Contains(3));
+            Assert.Contains(3, deque);
         }
 
         [Fact]
@@ -37,7 +37,7 @@ namespace DequeNet.Unit.ConcurrentDeque
             int item;
             Assert.True(deque.TryPeekLeft(out item));
             Assert.Equal(1, item);
-            Assert.True(deque.Contains(1));
+            Assert.Contains(1, deque);
         }
 
         [Fact]

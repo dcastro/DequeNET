@@ -54,9 +54,11 @@
   <ItemGroup>
     <Compile Include="ConcurrentDeque\ConcurrentDequeTests.ConcurrentAccess.cs" />
     <Compile Include="ConcurrentDeque\ConcurrentDequeTests.cs" />
+    <Compile Include="ConcurrentDeque\ConstructorTests.cs" />
     <Compile Include="ConcurrentDeque\Internal\ConstructorTests.cs" />
     <Compile Include="ConcurrentDeque\IsEmptyTests.cs" />
     <Compile Include="ConcurrentDeque\Internal\PushTests.cs" />
+    <Compile Include="ConcurrentDeque\PushTests.cs" />
     <Compile Include="ConcurrentDeque\TryPeekTests.cs" />
     <Compile Include="ConcurrentDeque\TryPopTests.cs" />
     <Compile Include="ConcurrentDeque\ProducerConsumerCollectionTests.cs" />

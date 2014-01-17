@@ -12,7 +12,7 @@ namespace DequeNet.Unit.ConcurrentDeque.Internal
     public class ConstructorTests
     {
         [Fact]
-        public void HasNoItemsByDefault()
+        public void PointersAreNull_ByDefault()
         {
             //Act
             var deque = new ConcurrentDeque<int>();
@@ -24,7 +24,7 @@ namespace DequeNet.Unit.ConcurrentDeque.Internal
         }
 
         [Fact]
-        public void IsStableByDefault()
+        public void IsStable_ByDefault()
         {
             //Act
             var deque = new ConcurrentDeque<int>();
@@ -40,7 +40,7 @@ namespace DequeNet.Unit.ConcurrentDeque.Internal
         {
             var deque = new ConcurrentDeque<int>(collection);
 
-            Assert.Equal(collection, deque);
+            Assert.Equal(collection, deque.GetNodes().Select(n => n._value));
             Assert.Equal(collection.Reverse(), deque.GetNodesReverse().Select(n => n._value));
         }
 
@@ -49,13 +49,12 @@ namespace DequeNet.Unit.ConcurrentDeque.Internal
             get
             {
                 return new[]
-                    {
-                        new object[] {new int[] {}},
-                        new object[] {new[] {1}},
-                        new object[] {new[] {1, 1}}
-                    };
+                {
+                    new object[] {new int[] {}},
+                    new object[] {new[] {1}},
+                    new object[] {new[] {1, 1}}
+                };
             }
         }
-
     }
 }

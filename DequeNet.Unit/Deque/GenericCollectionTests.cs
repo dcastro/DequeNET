@@ -35,7 +35,6 @@ namespace DequeNet.Unit.Deque
             Assert.False(deque.Contains(4));
         }
 
-
         [Fact]
         public void Clear_ResetsDeque()
         {
