@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DequeNet", "DequeNet\DequeNet.csproj", "{2276C08F-9C85-4713-A8D9-5580EFF5B853}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DequeNet.Unit", "DequeNet.Unit\DequeNet.Unit.csproj", "{2FAA47E4-EB30-4881-B09A-FA772F510036}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DequeNet.Tests", "DequeNet.Tests\DequeNet.Tests.csproj", "{2FAA47E4-EB30-4881-B09A-FA772F510036}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DequeNet.Functional", "DequeNet.Functional\DequeNet.Functional.csproj", "{AB5C541A-B129-49A6-AF4A-65DB6C6B257D}"
 EndProject
