@@ -1,9 +1,6 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace DequeNet.Test.Common
+namespace DequeNet.Tests.Helpers
 {
     internal static class ConcurrentDequeExtensions
     {

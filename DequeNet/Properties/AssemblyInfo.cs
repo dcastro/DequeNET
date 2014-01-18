@@ -36,5 +36,3 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 [assembly: InternalsVisibleTo("DequeNet.Tests")]
-[assembly: InternalsVisibleTo("DequeNet.Functional")]
-[assembly: InternalsVisibleTo("DequeNet.Test.Common")]

@@ -69,8 +69,10 @@
     <Compile Include="Deque\PopTests.cs" />
     <Compile Include="Deque\PushTests.cs" />
     <Compile Include="Deque\StressTests.cs" />
+    <Compile Include="Helpers\ConcurrentDequeExtensions.cs" />
     <Compile Include="Helpers\EnumerableExtensions.cs" />
     <Compile Include="Extensions\IntExtensionsTests.cs" />
+    <Compile Include="Helpers\ThreadStartExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ConcurrentDeque\SnapshotAlgorithmTests.cs" />
   </ItemGroup>
@@ -78,10 +80,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DequeNet.Test.Common\DequeNet.Test.Common.csproj">
-      <Project>{b5f779e4-a4c3-408c-bcd1-a06ab54a3595}</Project>
-      <Name>DequeNet.Test.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DequeNet\DequeNet.csproj">
       <Project>{2276c08f-9c85-4713-a8d9-5580eff5b853}</Project>
       <Name>DequeNet</Name>

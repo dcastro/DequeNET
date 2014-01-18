@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DequeNet.Tests.Helpers
 {
-    public static class EnumerableExtensions
+    internal static class EnumerableExtensions
     {
         public static long LongSum<T>(this IEnumerable<T> collection, Func<T, int> selector)
         {

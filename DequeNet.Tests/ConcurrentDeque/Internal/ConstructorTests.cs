@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using DequeNet.Tests.Helpers;
 using Xunit;
 using Xunit.Extensions;
-using DequeNet.Test.Common;
 
 namespace DequeNet.Tests.ConcurrentDeque.Internal
 {

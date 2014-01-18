@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
 using System.Threading;
 using Xunit;
 
-namespace DequeNet.Test.Common
+namespace DequeNet.Tests.Helpers
 {
-    public static class ThreadStartExtensions
+    internal static class ThreadStartExtensions
     {
         private const int ThreadTimeout = 500;
 
