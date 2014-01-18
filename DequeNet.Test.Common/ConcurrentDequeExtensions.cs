@@ -7,7 +7,7 @@ namespace DequeNet.Test.Common
 {
     internal static class ConcurrentDequeExtensions
     {
-        public static IEnumerable<ConcurrentDeque<T>.Node> GetNodes<T>(this ConcurrentDeque<T> deque)
+        public static IEnumerable<ConcurrentDeque<T>.Node> TraverseLeftRight<T>(this ConcurrentDeque<T> deque)
         {
             var anchor = deque._anchor;
             var current = anchor._left;
@@ -24,7 +24,7 @@ namespace DequeNet.Test.Common
             yield return last;
         }
 
-        public static IEnumerable<ConcurrentDeque<T>.Node> GetNodesReverse<T>(this ConcurrentDeque<T> deque)
+        public static IEnumerable<ConcurrentDeque<T>.Node> TraverseRightLeft<T>(this ConcurrentDeque<T> deque)
         {
             var anchor = deque._anchor;
             var current = anchor._right;

@@ -11,7 +11,7 @@ using Xunit.Extensions;
 
 namespace DequeNet.Unit.ConcurrentDeque
 {
-    public partial class ConcurrentDequeTests
+    public class ConcurrentDequeTests
     {
         [Fact]
         public void CanBeSerialized()

@@ -40,8 +40,8 @@ namespace DequeNet.Unit.ConcurrentDeque.Internal
         {
             var deque = new ConcurrentDeque<int>(collection);
 
-            Assert.Equal(collection, deque.GetNodes().Select(n => n._value));
-            Assert.Equal(collection.Reverse(), deque.GetNodesReverse().Select(n => n._value));
+            Assert.Equal(collection, deque.TraverseLeftRight().Select(n => n._value));
+            Assert.Equal(collection.Reverse(), deque.TraverseRightLeft().Select(n => n._value));
         }
 
         public static IEnumerable<object[]> Items
