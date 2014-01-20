@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using DequeNet.Test.Common;
-using DequeNet.Unit.Extensions;
+using DequeNet.Tests.Extensions;
+using DequeNet.Tests.Helpers;
 using Xunit;
 
-namespace DequeNet.Unit.ConcurrentDeque.Internal
+namespace DequeNet.Tests.ConcurrentDeque.Internal
 {
     public class StressTests
     {

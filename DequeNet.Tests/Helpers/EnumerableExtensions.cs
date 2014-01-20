@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DequeNet.Unit.Extensions
+namespace DequeNet.Tests.Helpers
 {
     public static class EnumerableExtensions
     {

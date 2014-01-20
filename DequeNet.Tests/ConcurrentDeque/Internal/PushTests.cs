@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
+﻿using Xunit;
 
-namespace DequeNet.Unit.ConcurrentDeque.Internal
+namespace DequeNet.Tests.ConcurrentDeque.Internal
 {
     public class PushTests
     {

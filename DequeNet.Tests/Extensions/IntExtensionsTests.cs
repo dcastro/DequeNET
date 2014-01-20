@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DequeNet.Extensions;
 using Xunit;
 using Xunit.Extensions;
+using DequeNet.Extensions;
 
-namespace DequeNet.Unit.Extensions
+namespace DequeNet.Tests.Extensions
 {
     public class IntExtensionsTests
     {

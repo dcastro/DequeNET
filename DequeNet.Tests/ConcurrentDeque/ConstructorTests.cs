@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Xunit;
 using Xunit.Extensions;
 
-namespace DequeNet.Unit.ConcurrentDeque
+namespace DequeNet.Tests.ConcurrentDeque
 {
     public class ConstructorTests
     {

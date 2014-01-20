@@ -5,7 +5,7 @@ using System.Threading;
 using Xunit;
 using Xunit.Extensions;
 
-namespace DequeNet.Unit.ConcurrentDeque
+namespace DequeNet.Tests.ConcurrentDeque
 {
     public class SnapshotAlgorithmTests
     {

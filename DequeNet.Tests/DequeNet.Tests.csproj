@@ -6,8 +6,8 @@
     <ProjectGuid>{2FAA47E4-EB30-4881-B09A-FA772F510036}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DequeNet.Unit</RootNamespace>
-    <AssemblyName>DequeNet.Unit</AssemblyName>
+    <RootNamespace>DequeNet.Tests</RootNamespace>
+    <AssemblyName>DequeNet.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -69,7 +69,7 @@
     <Compile Include="Deque\PopTests.cs" />
     <Compile Include="Deque\PushTests.cs" />
     <Compile Include="Deque\StressTests.cs" />
-    <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Helpers\EnumerableExtensions.cs" />
     <Compile Include="Extensions\IntExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ConcurrentDeque\SnapshotAlgorithmTests.cs" />
