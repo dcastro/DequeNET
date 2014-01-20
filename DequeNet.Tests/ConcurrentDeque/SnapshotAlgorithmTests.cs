@@ -4,11 +4,14 @@ using System.Linq;
 using System.Threading;
 using Xunit;
 using Xunit.Extensions;
+using DequeNet.Tests.Helpers;
 
 namespace DequeNet.Tests.ConcurrentDeque
 {
     public class SnapshotAlgorithmTests
     {
+        private const int ThreadCount = 10;
+
         private const int PopLeft = 0;
         private const int PopRight = 1;
         private const int PushLeft = 2;
@@ -40,45 +43,62 @@ namespace DequeNet.Tests.ConcurrentDeque
         
         [Theory]
         [PropertyData("MutationSteps")]
-        public void AlgorithmRecreatesOriginalXySequence(string msg, IEnumerable<int> ops)
+        public void Algorithm_Recreates_OriginalXySequence(string msg, IEnumerable<int> ops)
         {
-            var deque = new ConcurrentDeque<int>();
-            deque.PushRight(0);
-            deque.PushRight(1);
-            deque.PushRight(2);
-            deque.PushRight(3);
-            deque.PushRight(4);
+            int[] array = {0, 1, 2, 3, 4};
+            var deque = new ConcurrentDeque<int>(array);
 
             Action<ConcurrentDeque<int>> mutationCallback = d =>
                 {
                     foreach (var op in ops)
-                    {
-                        int item;
-                        switch (op)
-                        {
-                            case PopLeft:
-                                deque.TryPopLeft(out item);
-                                break;
-                            case PopRight:
-                                deque.TryPopRight(out item);
-                                break;
-                            case PushLeft:
-                                deque.PushLeft(10);
-                                break;
-                            case PushRight:
-                                deque.PushRight(10);
-                                break;
-                            default: throw new InvalidOperationException();
-                        }
-                    }
+                        ExecuteOp(deque, op);
                 };
 
             var snapshot = Execute(deque, mutationCallback);
 
-            Assert.Equal(new[] {0, 1, 2, 3, 4}, snapshot);
+            Assert.Equal(array, snapshot);
         }
 
-        private List<T> Execute<T>(ConcurrentDeque<T> deque, Action<ConcurrentDeque<T>> mutationCallback)
+        [RepeatTest(30)]
+        [Trait("Category", "LongRunning")]
+        public void Algorithm_Recreates_OriginalXySequence_StressTest()
+        {
+            int[] array = {0, 1, 2, 3, 4};
+            var deque = new ConcurrentDeque<int>(array);
+
+            bool cancelled = false;
+            Thread[] threads = null;
+            Action<ConcurrentDeque<int>> mutationCallback = d =>
+                {
+                    ThreadStart executeOps = () =>
+                        {
+                            var rnd = new Random(Thread.CurrentThread.ManagedThreadId);
+
+                            //randomly mutate deque
+                            while (!cancelled)
+                                ExecuteOp(deque, rnd.Next(4));
+                        };
+
+                    threads = executeOps.StartInParallel(ThreadCount);
+
+                    //yield the processor and let the threads run
+                    Thread.Yield();
+                };
+
+            //Act
+            var snapshot = Execute(deque, mutationCallback);
+
+            //stop threads
+            cancelled = true;
+            Assert.NotNull(threads);
+            foreach (var thread in threads)
+                thread.Join();
+
+            //Assert
+            Assert.Equal(array, snapshot);
+        }
+
+        private static List<T> Execute<T>(ConcurrentDeque<T> deque, Action<ConcurrentDeque<T>> mutationCallback)
         {
             //try to grab a reference to a stable anchor (fast route)
             ConcurrentDeque<T>.Anchor anchor = deque._anchor;
@@ -104,7 +124,7 @@ namespace DequeNet.Tests.ConcurrentDeque
                 return new List<T>();
 
             if (x == y)
-                return new List<T> { x._value };
+                return new List<T> {x._value};
 
             var xaPath = new List<ConcurrentDeque<T>.Node>();
             var current = x;
@@ -141,6 +161,28 @@ namespace DequeNet.Tests.ConcurrentDeque
                     ycPath.Select(node => node._value));
 
             return xySequence.ToList();
-        } 
+        }
+
+        private static void ExecuteOp(ConcurrentDeque<int> deque, int op)
+        {
+            int item;
+            switch (op)
+            {
+                case PopLeft:
+                    deque.TryPopLeft(out item);
+                    break;
+                case PopRight:
+                    deque.TryPopRight(out item);
+                    break;
+                case PushLeft:
+                    deque.PushLeft(10);
+                    break;
+                case PushRight:
+                    deque.PushRight(10);
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
     }
 }
