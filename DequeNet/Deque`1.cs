@@ -43,7 +43,7 @@ namespace DequeNet
         private int LeftIndex
         {
             get { return _leftIndex; }
-            set { _leftIndex = ToIndex(value); }
+            set { _leftIndex = CalcIndex(value); }
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace DequeNet
             EnsureCapacity(Count + 1);
 
             //insert item
-            var index = ToIndex(LeftIndex + Count);
+            var index = CalcIndex(LeftIndex + Count);
             _buffer[index] = item;
 
             //inc count
@@ -145,7 +145,7 @@ namespace DequeNet
             Count--;
 
             //retrieve rightmost item
-            var index = ToIndex(LeftIndex + Count);
+            var index = CalcIndex(LeftIndex + Count);
             var item = _buffer[index];
 
             //clean reference
@@ -189,7 +189,7 @@ namespace DequeNet
                 throw new InvalidOperationException("The deque is empty");
 
             //retrieve rightmost item
-            var index = ToIndex(LeftIndex + Count - 1);
+            var index = CalcIndex(LeftIndex + Count - 1);
             var item = _buffer[index];
 
             return item;
@@ -240,7 +240,7 @@ namespace DequeNet
 
             for (int i = 0; i < Count; i++)
             {
-                var index = ToIndex(LeftIndex + i);
+                var index = CalcIndex(LeftIndex + i);
                 yield return _buffer[index];
             }
         }
@@ -307,8 +307,8 @@ namespace DequeNet
                     for (int i = dequeIndex - 1; i >= 0; i--)
                     {
                         //calculate array indexes
-                        int sourceIndex = ToIndex(LeftIndex + i);
-                        int destinationIndex = ToIndex(sourceIndex + 1);
+                        int sourceIndex = CalcIndex(LeftIndex + i);
+                        int destinationIndex = CalcIndex(sourceIndex + 1);
 
                         _buffer[destinationIndex] = _buffer[sourceIndex];
                     }
@@ -326,14 +326,14 @@ namespace DequeNet
                     for (int i = dequeIndex + 1; i < Count; i++)
                     {
                         //calculate array indexes
-                        int sourceIndex = ToIndex(LeftIndex + i);
-                        int destinationIndex = ToIndex(sourceIndex - 1);
+                        int sourceIndex = CalcIndex(LeftIndex + i);
+                        int destinationIndex = CalcIndex(sourceIndex - 1);
 
                         _buffer[destinationIndex] = _buffer[sourceIndex];
                     }
 
                     //clean last item
-                    var lastItemIndex = ToIndex(LeftIndex + Count - 1);
+                    var lastItemIndex = CalcIndex(LeftIndex + Count - 1);
                     _buffer[lastItemIndex] = default(T);
 
                     //decrease count
@@ -481,7 +481,7 @@ namespace DequeNet
         /// </summary>
         /// <param name="position">The index.</param>
         /// <returns>The ring buffer index.</returns>
-        private int ToIndex(int position)
+        private int CalcIndex(int position)
         {
             //put 'position' in the range [0, Capacity-1] using modular arithmetic
             if (Capacity != 0)
