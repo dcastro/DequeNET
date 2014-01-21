@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using DequeNet.Debugging;
 using DequeNet.Extensions;
 
 namespace DequeNet
@@ -17,6 +19,8 @@ namespace DequeNet
     /// Items can be appended to/removed from both ends of the deque.
     /// </summary>
     /// <typeparam name="T">Specifies the type of the elements in the deque.</typeparam>
+    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerTypeProxy(typeof(DequeDebugView<>))] 
     [Serializable]
     public class Deque<T> : IDeque<T>
     {

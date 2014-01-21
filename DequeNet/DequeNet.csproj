@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="ConcurrentDeque`1.cs" />
     <Compile Include="Debugging\ConcurrentDequeDebugView`1.cs" />
+    <Compile Include="Debugging\DequeDebugView`1.cs" />
     <Compile Include="Deque`1.cs" />
     <Compile Include="Extensions\IntExtensions.cs" />
     <Compile Include="IConcurrentDeque`1.cs" />
