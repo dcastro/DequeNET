@@ -13,6 +13,12 @@ namespace DequeNet.Tests.Deque
         }
 
         [Fact]
+        public void WithNullIEnumerable_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new Deque<int>(null));
+        }
+
+        [Fact]
         public void WithZeroCapacity_HasZeroCapacity()
         {
             var deque = new Deque<int>(0);

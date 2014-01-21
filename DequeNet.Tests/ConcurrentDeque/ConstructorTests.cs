@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Xunit;
 using Xunit.Extensions;
 
@@ -11,6 +12,12 @@ namespace DequeNet.Tests.ConcurrentDeque
         {
             var deque = new ConcurrentDeque<int>();
             Assert.Empty(deque);
+        }
+
+        [Fact]
+        public void WithNullIEnumerable_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => new ConcurrentDeque<int>(null));
         }
 
         [Theory]

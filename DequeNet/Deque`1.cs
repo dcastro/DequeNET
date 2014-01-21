@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using DequeNet.Extensions;
@@ -16,6 +17,7 @@ namespace DequeNet
     /// Items can be appended to/removed from both ends of the deque.
     /// </summary>
     /// <typeparam name="T">Specifies the type of the elements in the deque.</typeparam>
+    [Serializable]
     public class Deque<T> : IDeque<T>
     {
         private const int DefaultCapacity = 4;
@@ -61,6 +63,14 @@ namespace DequeNet
         /// </summary>
         /// <param name="collection">The collection whose elements are copied to the deque.</param>
         public Deque(IEnumerable<T> collection)
+        {
+            if(collection == null)
+                throw new ArgumentNullException("collection");
+
+            InitializeFromCollection(collection);
+        }
+
+        private void InitializeFromCollection(IEnumerable<T> collection)
         {
             var capacity = collection.Count();
             if (capacity == 0)

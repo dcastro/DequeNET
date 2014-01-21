@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using Xunit;
 
 namespace DequeNet.Tests.Deque
@@ -29,21 +31,43 @@ namespace DequeNet.Tests.Deque
 
             var generator = new RandomOpGenerator();
             var rnd = new Random();
-            const int operationsCount = 50000;
+            const int operationsCount = 100000;
 
             for (int i = 0; i < operationsCount; i++)
             {
                 //mutate deque
                 if (i%300 == 0)
                 {
+                    //clear every 300 mutations
                     _deque.Clear();
                     _shadow.Clear();
                 }
                 else if (i%200 == 0)
                 {
+                    //trim excess every 300 mutations
                     _deque.TrimExcess();
                     _shadow.TrimExcess();
                     Assert.Equal(_deque.Count, _deque.Capacity);
+                }
+                else if (i%100 == 0)
+                {
+                    //serialize/deserialize deque every 300 mutations
+                    using (var ms = new MemoryStream())
+                    {
+                        //serialize
+                        var formatter = new BinaryFormatter();
+                        formatter.Serialize(ms, _deque);
+
+                        //deserialize
+                        ms.Seek(0, SeekOrigin.Begin);
+                        var tempDeque = formatter.Deserialize(ms) as Deque<int>;
+
+                        Assert.NotNull(tempDeque);
+                        Assert.Equal(_deque.Capacity, tempDeque.Capacity);
+
+                        //replace _deque with the deserialized deque
+                        _deque = tempDeque;
+                    }
                 }
                 else
                 {
