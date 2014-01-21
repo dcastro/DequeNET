@@ -40,12 +40,6 @@ namespace DequeNet
             _buffer = EmptyBuffer;
         }
 
-        private int LeftIndex
-        {
-            get { return _leftIndex; }
-            set { _leftIndex = CalcIndex(value); }
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Deque{T}"/> class with the specified capacity.
         /// </summary>
@@ -87,14 +81,6 @@ namespace DequeNet
                         PushRight(item);
                 }
             }
-        } 
-
-        /// <summary>
-        /// Gets a value that indicates whether the <see cref="Deque{T}"/> is empty.
-        /// </summary>
-        public bool IsEmpty
-        {
-            get { return Count == 0; }
         }
 
         /// <summary>
@@ -105,12 +91,11 @@ namespace DequeNet
         {
             EnsureCapacity(Count + 1);
 
-            //insert item
-            var index = CalcIndex(LeftIndex + Count);
-            _buffer[index] = item;
-
             //inc count
             Count ++;
+
+            //insert item
+            Right = item;
         }
 
         /// <summary>
@@ -121,14 +106,12 @@ namespace DequeNet
         {
             EnsureCapacity(Count + 1);
 
-            //decrement left
+            //decrement left index and increment count
             LeftIndex --;
+            Count++;
 
             //insert item
-            _buffer[LeftIndex] = item;
-
-            //inc count
-            Count ++;
+            Left = item;
         }
 
         /// <summary>
@@ -141,17 +124,13 @@ namespace DequeNet
             if (IsEmpty)
                 throw new InvalidOperationException("The deque is empty");
 
+            //retrieve rightmost item and clean buffer slot
+            var right = Right;
+            Right = default(T);
+
             //dec count
             Count--;
-
-            //retrieve rightmost item
-            var index = CalcIndex(LeftIndex + Count);
-            var item = _buffer[index];
-
-            //clean reference
-            _buffer[index] = default(T);
-
-            return item;
+            return right;
         }
 
         /// <summary>
@@ -164,17 +143,15 @@ namespace DequeNet
             if (IsEmpty)
                 throw new InvalidOperationException("The deque is empty");
 
-            //retrieve leftmost item
-            var item = _buffer[LeftIndex];
-            Count--;
-            
-            //clean reference
-            _buffer[LeftIndex] = default(T);
+            //retrieve leftmost item and clean buffer slot
+            var left = Left;
+            Left = default(T);
 
-            //increment left
+            //increment left index and decrement count
             LeftIndex++;
+            Count--;
 
-            return item;
+            return left;
         }
 
         /// <summary>
@@ -189,10 +166,7 @@ namespace DequeNet
                 throw new InvalidOperationException("The deque is empty");
 
             //retrieve rightmost item
-            var index = CalcIndex(LeftIndex + Count - 1);
-            var item = _buffer[index];
-
-            return item;
+            return Right;
         }
 
         /// <summary>
@@ -207,7 +181,7 @@ namespace DequeNet
                 throw new InvalidOperationException("The deque is empty");
 
             //retrieve leftmost item
-            return _buffer[LeftIndex];
+            return Left;
         }
 
         /// <summary>
@@ -313,8 +287,8 @@ namespace DequeNet
                         _buffer[destinationIndex] = _buffer[sourceIndex];
                     }
 
-                    //clean first item
-                    _buffer[LeftIndex] = default(T);
+                    //clean leftmost item
+                    Left = default(T);
 
                     //increase left
                     LeftIndex ++;
@@ -332,9 +306,8 @@ namespace DequeNet
                         _buffer[destinationIndex] = _buffer[sourceIndex];
                     }
 
-                    //clean last item
-                    var lastItemIndex = CalcIndex(LeftIndex + Count - 1);
-                    _buffer[lastItemIndex] = default(T);
+                    //clean rightmost item
+                    Right = default(T);
 
                     //decrease count
                     Count--;
@@ -426,12 +399,38 @@ namespace DequeNet
         }
 
         /// <summary>
+        /// Uses modular arithmetic to calculate the correct ring buffer index for a given index.
+        /// If <paramref name="position"/> is over the array's upper boundary, the returned index "wraps/loops around" the upper boundary.
+        /// </summary>
+        /// <param name="position">The index.</param>
+        /// <returns>The ring buffer index.</returns>
+        private int CalcIndex(int position)
+        {
+            //put 'position' in the range [0, Capacity-1] using modular arithmetic
+            if (Capacity != 0)
+                return position.Mod(Capacity);
+
+            //if capacity is 0, _leftIndex must always be 0
+            Contract.Assert(_leftIndex == 0);
+
+            return 0;
+        }
+
+        /// <summary>
         /// Gets the number of elements contained in the <see cref="Deque{T}"/>.
         /// </summary>
         /// <returns>
         /// The number of elements contained in the <see cref="Deque{T}"/>.
         /// </returns>
         public int Count { get; private set; }
+
+        /// <summary>
+        /// Gets a value that indicates whether the <see cref="Deque{T}"/> is empty.
+        /// </summary>
+        public bool IsEmpty
+        {
+            get { return Count == 0; }
+        }
 
         bool ICollection<T>.IsReadOnly
         {
@@ -447,8 +446,7 @@ namespace DequeNet
             get { return _buffer.Length; }
             set
             {
-                var count = Count;
-                if (value < count)
+                if (value < Count)
                     throw new ArgumentOutOfRangeException("value", "capacity was less than the current size.");
 
                 if (value == Capacity)
@@ -475,22 +473,22 @@ namespace DequeNet
             }
         }
 
-        /// <summary>
-        /// Uses modular arithmetic to calculate the correct ring buffer index for a given index.
-        /// If <paramref name="position"/> is over the array's upper boundary, the returned index "wraps/loops around" the upper boundary.
-        /// </summary>
-        /// <param name="position">The index.</param>
-        /// <returns>The ring buffer index.</returns>
-        private int CalcIndex(int position)
+        private int LeftIndex
         {
-            //put 'position' in the range [0, Capacity-1] using modular arithmetic
-            if (Capacity != 0)
-                return position.Mod(Capacity);
+            get { return _leftIndex; }
+            set { _leftIndex = CalcIndex(value); }
+        }
 
-            //if capacity is 0, _leftIndex must always be 0
-            Contract.Assert(_leftIndex == 0);
+        private T Left
+        {
+            get { return _buffer[LeftIndex]; }
+            set { _buffer[LeftIndex] = value; }
+        }
 
-            return 0;
+        private T Right
+        {
+            get { return _buffer[CalcIndex(LeftIndex + Count - 1)]; }
+            set { _buffer[CalcIndex(LeftIndex + Count - 1)] = value; }
         }
     }
 }
