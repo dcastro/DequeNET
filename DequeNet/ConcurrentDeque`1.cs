@@ -1,15 +1,13 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using System.Runtime.Serialization;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using DequeNet.Debugging;
+
 
 //Disable "a reference to a volatile field will not be treated as volatile" warnings.
 //As per the MSDN documentation: "There are exceptions to this, such as when calling an interlocked API".
@@ -25,15 +23,10 @@ namespace DequeNet
     /// </summary>
     /// <typeparam name="T">Specifies the type of the elements in the deque.</typeparam>
     [DebuggerDisplay("Count = {Count}")]
-    [DebuggerTypeProxy(typeof(ConcurrentDequeDebugView<>))] 
-    [Serializable]
+    [DebuggerTypeProxy(typeof(ConcurrentDequeDebugView<>))]
     public class ConcurrentDeque<T> : IConcurrentDeque<T>
     {
-        [NonSerialized]
         internal volatile Anchor _anchor;
-
-        //Used for custom serialization
-        private T[] _serializationArray;
 
         /// <summary>
         /// Gets a value that indicates whether the <see cref="ConcurrentDeque{T}"/> is empty.
@@ -109,26 +102,6 @@ namespace DequeNet
                 _anchor = new Anchor();
             }
 
-        }
-
-        /// <summary> 
-        /// Get the data array to be serialized.
-        /// </summary> 
-        [OnSerializing]
-        private void OnSerializing(StreamingContext context)
-        {
-            // save the data into the serialization array to be saved 
-            _serializationArray = ToArray();
-        }
-
-        /// <summary>
-        /// Construct the deque from a previously serialized one.
-        /// </summary>
-        [OnDeserialized]
-        private void OnDeserialized(StreamingContext context)
-        {
-            InitializeFromCollection(_serializationArray);
-            _serializationArray = null;
         }
 
         /// <summary>

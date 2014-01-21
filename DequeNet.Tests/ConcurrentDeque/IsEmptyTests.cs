@@ -15,8 +15,7 @@ namespace DequeNet.Tests.ConcurrentDeque
         [Fact]
         public void IsEmptyReturnsFalseIfDequeHasItems()
         {
-            var deque = new ConcurrentDeque<int>();
-            deque.PushRight(0);
+            var deque = new ConcurrentDeque<int>(new[] {1});
 
             Assert.False(deque.IsEmpty);
         }

@@ -53,7 +53,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ConcurrentDeque\Internal\StressTests.cs" />
-    <Compile Include="ConcurrentDeque\ConcurrentDequeTests.cs" />
+    <Compile Include="ConcurrentDeque\ClearTests.cs" />
     <Compile Include="ConcurrentDeque\ConstructorTests.cs" />
     <Compile Include="ConcurrentDeque\Internal\ConstructorTests.cs" />
     <Compile Include="ConcurrentDeque\IsEmptyTests.cs" />
@@ -68,7 +68,6 @@
     <Compile Include="Deque\PeekTests.cs" />
     <Compile Include="Deque\PopTests.cs" />
     <Compile Include="Deque\PushTests.cs" />
-    <Compile Include="Deque\SerializationTests.cs" />
     <Compile Include="Deque\StressTests.cs" />
     <Compile Include="Helpers\ConcurrentDequeExtensions.cs" />
     <Compile Include="Helpers\EnumerableExtensions.cs" />
@@ -79,13 +78,13 @@
     <Compile Include="ConcurrentDeque\SnapshotAlgorithmTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DequeNet\DequeNet.csproj">
-      <Project>{2276c08f-9c85-4713-a8d9-5580eff5b853}</Project>
-      <Name>DequeNet</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\DequeNet\DequeNet.csproj">
+      <Project>{2de22fd0-e725-4ce8-8ec2-eb23f4db163e}</Project>
+      <Name>DequeNet</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

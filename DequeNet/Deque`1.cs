@@ -1,14 +1,9 @@
-﻿using System;
+using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using DequeNet.Debugging;
 using DequeNet.Extensions;
 
@@ -21,7 +16,6 @@ namespace DequeNet
     /// <typeparam name="T">Specifies the type of the elements in the deque.</typeparam>
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(typeof(DequeDebugView<>))] 
-    [Serializable]
     public class Deque<T> : IDeque<T>
     {
         private const int DefaultCapacity = 4;
