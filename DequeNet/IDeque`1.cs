@@ -56,5 +56,13 @@ namespace DequeNet
         /// <returns>The leftmost item.</returns>
         /// <exception cref="InvalidOperationException">The deque is empty.</exception>
         T PeekLeft();
+
+        /// <summary>
+        /// Gets or sets the item at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get or set.</param>
+        /// <returns>The element at the specified index.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Index was out of range. Must be non-negative and less than <see cref="ICollection{T}.Count"/>.</exception>
+        T this[int index] { get; set; }
     }
 }

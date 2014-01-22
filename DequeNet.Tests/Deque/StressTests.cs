@@ -19,7 +19,8 @@ namespace DequeNet.Tests.Deque
             PushRight,
             PushLeft,
             Remove,
-            Add
+            Add,
+            SetIndex
         }
 
         [Fact]
@@ -71,6 +72,15 @@ namespace DequeNet.Tests.Deque
                             (_deque as ICollection<int>).Add(val);
                             _shadow.Add(val);
                             break;
+                        case Op.SetIndex:
+                            if (_deque.IsEmpty)
+                                goto case Op.Add;
+
+                            var randomIndex = rnd.Next(_shadow.Count);
+                            val = rnd.Next(1000);
+                            _deque[randomIndex] = val;
+                            _shadow[randomIndex] = val;
+                            break;
                         case Op.PopLeft:
                             if (_deque.IsEmpty)
                                 goto case Op.PushLeft;
@@ -103,7 +113,14 @@ namespace DequeNet.Tests.Deque
                 VerifySequence();
                 VerifyEnds();
                 VerifyCapacity();
+                VerifyIndexer();
             }
+        }
+
+        private void VerifyIndexer()
+        {
+            for (int i = 0; i < _shadow.Count; i++)
+                Assert.Equal(_shadow[i], _deque[i]);
         }
 
         private void VerifyCapacity()
@@ -160,6 +177,7 @@ namespace DequeNet.Tests.Deque
                     {Op.PushRight, 2},
                     {Op.PushLeft, 2},
                     {Op.Add, 1},
+                    {Op.SetIndex, 1},
 
                     {Op.PopRight, 1},
                     {Op.PopLeft, 1},

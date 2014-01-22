@@ -291,13 +291,7 @@ namespace DequeNet
                 {
                     //move the items to the left of 'item' one index to the right
                     for (int i = virtualIndex - 1; i >= 0; i--)
-                    {
-                        //calculate array indexes
-                        int sourceIndex = VirtualIndexToBufferIndex(i);
-                        int destinationIndex = VirtualIndexToBufferIndex(i + 1);
-
-                        _buffer[destinationIndex] = _buffer[sourceIndex];
-                    }
+                        this[i + 1] = this[i];
 
                     //clean leftmost item
                     Left = default(T);
@@ -310,13 +304,7 @@ namespace DequeNet
                 {
                     //move the items to the right of 'item' one index to the left
                     for (int i = virtualIndex + 1; i < Count; i++)
-                    {
-                        //calculate array indexes
-                        int sourceIndex = VirtualIndexToBufferIndex(i);
-                        int destinationIndex = VirtualIndexToBufferIndex(i - 1);
-
-                        _buffer[destinationIndex] = _buffer[sourceIndex];
-                    }
+                        this[i - 1] = this[i];
 
                     //clean rightmost item
                     Right = default(T);
@@ -434,12 +422,15 @@ namespace DequeNet
         /// A virtual index is the index of an item as seen from an enumerator's perspective, i.e., as if the items were laid out sequentially starting at index 0.
         /// As such, a virtual index is in the range [0, Count - 1].
         /// </summary>
-        /// <param name="virtualIndex">The virtual index.</param>
+        /// <param name="index">The virtual index.</param>
         /// <returns>A ring buffer index</returns>
-        private int VirtualIndexToBufferIndex(int virtualIndex)
+        private int VirtualIndexToBufferIndex(int index)
         {
+            if (index < 0 || index >= Count)
+                throw new ArgumentOutOfRangeException("index", "Index was out of range. Must be non-negative and less than the size of the collection.");
+
             //Apply LeftIndex offset and modular arithmetic
-            return CalcIndex(LeftIndex + virtualIndex);
+            return CalcIndex(LeftIndex + index);
         }
 
         /// <summary>
@@ -507,14 +498,26 @@ namespace DequeNet
 
         private T Left
         {
-            get { return _buffer[LeftIndex]; }
-            set { _buffer[LeftIndex] = value; }
+            get { return this[0]; }
+            set { this[0] = value; }
         }
 
         private T Right
         {
-            get { return _buffer[VirtualIndexToBufferIndex(Count - 1)]; }
-            set { _buffer[VirtualIndexToBufferIndex(Count - 1)] = value; }
+            get { return this[Count - 1]; }
+            set { this[Count - 1] = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the item at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get or set.</param>
+        /// <returns>The element at the specified index.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Index was out of range. Must be non-negative and less than <see cref="ICollection{T}.Count"/>.</exception>
+        public T this[int index]
+        {
+            get { return _buffer[VirtualIndexToBufferIndex(index)]; }
+            set { _buffer[VirtualIndexToBufferIndex(index)] = value; }
         }
 
         public struct Enumerator : IEnumerator<T>
@@ -542,10 +545,7 @@ namespace DequeNet
                     return false;
 
                 _virtualIndex++;
-
-                //apply offset and retrieve item
-                var bufferIndex = _deque.VirtualIndexToBufferIndex(_virtualIndex);
-                _current = _deque._buffer[bufferIndex];
+                _current = _deque[_virtualIndex];
                 return true;
             }
 
