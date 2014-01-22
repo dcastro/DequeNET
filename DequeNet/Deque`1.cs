@@ -22,6 +22,8 @@ namespace DequeNet
 
         private static readonly T[] EmptyBuffer = new T[0];
 
+        private int _version;
+
         /// <summary>
         /// Ring buffer that holds the items.
         /// </summary>
@@ -104,6 +106,8 @@ namespace DequeNet
 
             //insert item
             Right = item;
+
+            _version++;
         }
 
         /// <summary>
@@ -120,6 +124,8 @@ namespace DequeNet
 
             //insert item
             Left = item;
+
+            _version++;
         }
 
         /// <summary>
@@ -138,6 +144,7 @@ namespace DequeNet
 
             //dec count
             Count--;
+            _version++;
             return right;
         }
 
@@ -158,6 +165,7 @@ namespace DequeNet
             //increment left index and decrement count
             LeftIndex++;
             Count--;
+            _version++;
 
             return left;
         }
@@ -209,6 +217,7 @@ namespace DequeNet
 
             Count = 0;
             LeftIndex = 0;
+            _version++;
         }
 
         /// <summary>
@@ -219,12 +228,7 @@ namespace DequeNet
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-
-            for (int i = 0; i < Count; i++)
-            {
-                var index = CalcIndex(LeftIndex + i);
-                yield return _buffer[index];
-            }
+            return new Enumerator(this);
         }
 
         /// <summary>
@@ -320,6 +324,7 @@ namespace DequeNet
                     //decrease count
                     Count--;
                 }
+                _version++;
             }
 
             return true;
@@ -407,10 +412,10 @@ namespace DequeNet
         }
 
         /// <summary>
-        /// Uses modular arithmetic to calculate the correct ring buffer index for a given index.
+        /// Uses modular arithmetic to calculate the correct ring buffer index for a given (possibly out-of-bounds) index.
         /// If <paramref name="position"/> is over the array's upper boundary, the returned index "wraps/loops around" the upper boundary.
         /// </summary>
-        /// <param name="position">The index.</param>
+        /// <param name="position">The possibly out-of-bounds index.</param>
         /// <returns>The ring buffer index.</returns>
         private int CalcIndex(int position)
         {
@@ -422,6 +427,12 @@ namespace DequeNet
             Contract.Assert(_leftIndex == 0);
 
             return 0;
+        }
+
+        private int ViewIndexToBufferIndex(int viewIndex)
+        {
+            //Apply LeftIndex offset
+            return CalcIndex(LeftIndex + viewIndex);
         }
 
         /// <summary>
@@ -497,6 +508,70 @@ namespace DequeNet
         {
             get { return _buffer[CalcIndex(LeftIndex + Count - 1)]; }
             set { _buffer[CalcIndex(LeftIndex + Count - 1)] = value; }
+        }
+
+        public struct Enumerator : IEnumerator<T>
+        {
+            private readonly Deque<T> _deque;
+            private readonly int _version;
+            private T _current;
+
+            //the index of the current item in the deque
+            private int _viewIndex;
+
+            internal Enumerator(Deque<T> deque)
+            {
+                _deque = deque;
+                _version = _deque._version;
+                _current = default(T);
+                _viewIndex = -1;
+            }
+
+            public bool MoveNext()
+            {
+                Validate();
+
+                if (_viewIndex == _deque.Count -1)
+                    return false;
+
+                _viewIndex++;
+
+                //apply offset and retrieve item
+                var bufferIndex = _deque.ViewIndexToBufferIndex(_viewIndex);
+                _current = _deque._buffer[bufferIndex];
+                return true;
+            }
+
+            void IEnumerator.Reset()
+            {
+                Validate();
+
+                _viewIndex = -1;
+                _current = default(T);
+            }
+
+            public T Current
+            {
+                get { return _current; }
+            }
+
+            object IEnumerator.Current
+            {
+                get { return Current; }
+            }
+
+            public void Dispose()
+            {
+            }
+
+            /// <summary>
+            /// Verify that the deque hasn't been modified.
+            /// </summary>
+            private void Validate()
+            {
+                if (_version != _deque._version)
+                    throw new InvalidOperationException("Collection was modified; enumeration operation may not execute.");
+            }
         }
     }
 }

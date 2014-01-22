@@ -64,6 +64,7 @@
     <Compile Include="ConcurrentDeque\ProducerConsumerCollectionTests.cs" />
     <Compile Include="Deque\CapacityTests.cs" />
     <Compile Include="Deque\ConstructorTests.cs" />
+    <Compile Include="Deque\EnumeratorTests.cs" />
     <Compile Include="Deque\GenericCollectionTests.cs" />
     <Compile Include="Deque\PeekTests.cs" />
     <Compile Include="Deque\PopTests.cs" />
