@@ -264,37 +264,37 @@ namespace DequeNet
         {
             //find the index of the item to be removed in the deque
             var comp = EqualityComparer<T>.Default;
-            int dequeIndex = -1;
+            int virtualIndex = -1;
             int counter = 0;
             foreach (var dequeItem in this)
             {
                 if (comp.Equals(item, dequeItem))
                 {
-                    dequeIndex = counter;
+                    virtualIndex = counter;
                     break;
                 }
                 counter++;
             }
 
             //return false if the item wasn't found
-            if (dequeIndex == -1)
+            if (virtualIndex == -1)
                 return false;
 
             //if the removal should be performed on one of the ends, use the corresponding Pop operation instead
-            if (dequeIndex == 0)
+            if (virtualIndex == 0)
                 PopLeft();
-            else if (dequeIndex == Count - 1)
+            else if (virtualIndex == Count - 1)
                 PopRight();
             else
             {
-                if (dequeIndex < Count/2) //If the item is located towards the left end of the deque
+                if (virtualIndex < Count/2) //If the item is located towards the left end of the deque
                 {
                     //move the items to the left of 'item' one index to the right
-                    for (int i = dequeIndex - 1; i >= 0; i--)
+                    for (int i = virtualIndex - 1; i >= 0; i--)
                     {
                         //calculate array indexes
-                        int sourceIndex = CalcIndex(LeftIndex + i);
-                        int destinationIndex = CalcIndex(sourceIndex + 1);
+                        int sourceIndex = VirtualIndexToBufferIndex(i);
+                        int destinationIndex = VirtualIndexToBufferIndex(i + 1);
 
                         _buffer[destinationIndex] = _buffer[sourceIndex];
                     }
@@ -303,17 +303,17 @@ namespace DequeNet
                     Left = default(T);
 
                     //increase left
-                    LeftIndex ++;
-                    Count --;
+                    LeftIndex++;
+                    Count--;
                 }
                 else //If the item is located towards the right end of the deque
                 {
                     //move the items to the right of 'item' one index to the left
-                    for (int i = dequeIndex + 1; i < Count; i++)
+                    for (int i = virtualIndex + 1; i < Count; i++)
                     {
                         //calculate array indexes
-                        int sourceIndex = CalcIndex(LeftIndex + i);
-                        int destinationIndex = CalcIndex(sourceIndex - 1);
+                        int sourceIndex = VirtualIndexToBufferIndex(i);
+                        int destinationIndex = VirtualIndexToBufferIndex(i - 1);
 
                         _buffer[destinationIndex] = _buffer[sourceIndex];
                     }
@@ -429,10 +429,17 @@ namespace DequeNet
             return 0;
         }
 
-        private int ViewIndexToBufferIndex(int viewIndex)
+        /// <summary>
+        /// Calculates the ring buffer index corresponding to a given "virtual index".
+        /// A virtual index is the index of an item as seen from an enumerator's perspective, i.e., as if the items were laid out sequentially starting at index 0.
+        /// As such, a virtual index is in the range [0, Count - 1].
+        /// </summary>
+        /// <param name="virtualIndex">The virtual index.</param>
+        /// <returns>A ring buffer index</returns>
+        private int VirtualIndexToBufferIndex(int virtualIndex)
         {
-            //Apply LeftIndex offset
-            return CalcIndex(LeftIndex + viewIndex);
+            //Apply LeftIndex offset and modular arithmetic
+            return CalcIndex(LeftIndex + virtualIndex);
         }
 
         /// <summary>
@@ -506,8 +513,8 @@ namespace DequeNet
 
         private T Right
         {
-            get { return _buffer[CalcIndex(LeftIndex + Count - 1)]; }
-            set { _buffer[CalcIndex(LeftIndex + Count - 1)] = value; }
+            get { return _buffer[VirtualIndexToBufferIndex(Count - 1)]; }
+            set { _buffer[VirtualIndexToBufferIndex(Count - 1)] = value; }
         }
 
         public struct Enumerator : IEnumerator<T>
@@ -517,27 +524,27 @@ namespace DequeNet
             private T _current;
 
             //the index of the current item in the deque
-            private int _viewIndex;
+            private int _virtualIndex;
 
             internal Enumerator(Deque<T> deque)
             {
                 _deque = deque;
                 _version = _deque._version;
                 _current = default(T);
-                _viewIndex = -1;
+                _virtualIndex = -1;
             }
 
             public bool MoveNext()
             {
                 Validate();
 
-                if (_viewIndex == _deque.Count -1)
+                if (_virtualIndex == _deque.Count -1)
                     return false;
 
-                _viewIndex++;
+                _virtualIndex++;
 
                 //apply offset and retrieve item
-                var bufferIndex = _deque.ViewIndexToBufferIndex(_viewIndex);
+                var bufferIndex = _deque.VirtualIndexToBufferIndex(_virtualIndex);
                 _current = _deque._buffer[bufferIndex];
                 return true;
             }
@@ -546,7 +553,7 @@ namespace DequeNet
             {
                 Validate();
 
-                _viewIndex = -1;
+                _virtualIndex = -1;
                 _current = default(T);
             }
 
