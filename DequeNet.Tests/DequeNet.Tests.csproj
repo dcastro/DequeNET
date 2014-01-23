@@ -63,6 +63,7 @@
     <Compile Include="ConcurrentDeque\TryPopTests.cs" />
     <Compile Include="ConcurrentDeque\ProducerConsumerCollectionTests.cs" />
     <Compile Include="Deque\CapacityTests.cs" />
+    <Compile Include="Deque\CollectionTests.cs" />
     <Compile Include="Deque\ConstructorTests.cs" />
     <Compile Include="Deque\EnumeratorTests.cs" />
     <Compile Include="Deque\GenericCollectionTests.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="Deque\PopTests.cs" />
     <Compile Include="Deque\PushTests.cs" />
     <Compile Include="Deque\StressTests.cs" />
+    <Compile Include="Helpers\ArrayExtensions.cs" />
     <Compile Include="Helpers\ConcurrentDequeExtensions.cs" />
     <Compile Include="Helpers\EnumerableExtensions.cs" />
     <Compile Include="Extensions\IntExtensionsTests.cs" />

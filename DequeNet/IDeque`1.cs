@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace DequeNet
@@ -8,8 +9,10 @@ namespace DequeNet
     /// Items can be appended to/removed from both ends of the deque.
     /// </summary>
     /// <typeparam name="T">Specifies the type of the elements in the deque.</typeparam>
-    public interface IDeque<T> : ICollection<T>
+    public interface IDeque<T> : ICollection<T>, ICollection
     {
+        new int Count { get; }
+
         /// <summary>
         /// Gets a value that indicates whether the <see cref="IDeque{T}"/> is empty.
         /// </summary>

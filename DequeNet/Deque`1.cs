@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Threading;
 using DequeNet.Debugging;
 using DequeNet.Extensions;
 
@@ -23,6 +24,8 @@ namespace DequeNet
         private static readonly T[] EmptyBuffer = new T[0];
 
         private int _version;
+
+        private object _syncRoot;
 
         /// <summary>
         /// Ring buffer that holds the items.
@@ -340,10 +343,18 @@ namespace DequeNet
         /// <exception cref="ArgumentException">The number of elements in the source <see cref="Deque{T}"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
-            if(array == null)
+            ((ICollection) this).CopyTo(array , arrayIndex);
+        }
+
+        void ICollection.CopyTo(Array array, int arrayIndex)
+        {
+            if (array == null)
                 throw new ArgumentNullException("array");
 
-            if(arrayIndex < 0)
+            if (array.Rank != 1)
+                throw new ArgumentException("Only single dimensional arrays are supported for the requested action.");
+
+            if (arrayIndex < 0)
                 throw new ArgumentOutOfRangeException("arrayIndex", "Index was less than the array's lower bound.");
 
             if (arrayIndex >= array.Length)
@@ -352,20 +363,27 @@ namespace DequeNet
             if (Count == 0)
                 return;
 
-            if(array.Length - arrayIndex < Count)
+            if (array.Length - arrayIndex < Count)
                 throw new ArgumentException("Destination array was not long enough");
-
-            //if the elements are stored sequentially (i.e., left+count doesn't "loop around" the array's boundary),
-            //copy the array as a whole
-            if (!LoopsAround)
+            
+            try
             {
-                Array.Copy(_buffer, LeftIndex, array, arrayIndex, Count);
+                //if the elements are stored sequentially (i.e., left+count doesn't "wrap around" the array's boundary),
+                //copy the array as a whole
+                if (!LoopsAround)
+                {
+                    Array.Copy(_buffer, LeftIndex, array, arrayIndex, Count);
+                }
+                else
+                {
+                    //copy both halves to a new array
+                    Array.Copy(_buffer, LeftIndex, array, arrayIndex, Capacity - LeftIndex);
+                    Array.Copy(_buffer, 0, array, arrayIndex + Capacity - LeftIndex, LeftIndex + (Count - Capacity));
+                }
             }
-            else
+            catch (ArrayTypeMismatchException)
             {
-                //copy both halves to a new array
-                Array.Copy(_buffer, LeftIndex, array, arrayIndex, Capacity - LeftIndex);
-                Array.Copy(_buffer, 0, array, arrayIndex + Capacity - LeftIndex, LeftIndex + (Count - Capacity));
+                throw new ArgumentException("Target array type is not compatible with the type of items in the collection.");
             }
         }
 
@@ -440,6 +458,36 @@ namespace DequeNet
         /// The number of elements contained in the <see cref="Deque{T}"/>.
         /// </returns>
         public int Count { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether access to the <see cref="ICollection"/> is synchronized (thread safe).
+        /// </summary>
+        /// <returns>
+        /// true if access to the <see cref="ICollection"/> is synchronized (thread safe); otherwise, false.
+        /// For <see cref="Deque{T}"/>, this property always returns false.
+        /// </returns>
+        bool ICollection.IsSynchronized
+        {
+            get { return false; }
+        }
+
+        /// <summary>
+        /// Gets an object that can be used to synchronize access to the <see cref="ICollection"/>.
+        /// </summary>
+        /// <returns>
+        /// An object that can be used to synchronize access to the <see cref="ICollection"/>.
+        /// </returns>
+        object ICollection.SyncRoot
+        {
+            get
+            {
+                if (_syncRoot == null)
+                {
+                    Interlocked.CompareExchange(ref _syncRoot, new object(), null);
+                }
+                return _syncRoot;
+            }
+        }
 
         /// <summary>
         /// Gets a value that indicates whether the <see cref="Deque{T}"/> is empty.

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DequeNet.Tests.Helpers;
 using Xunit;
 
 namespace DequeNet.Tests.Deque
@@ -123,29 +124,44 @@ namespace DequeNet.Tests.Deque
         public void CopyTo_WithNegativeIndex_ThrowsException()
         {
             var deque = new Deque<int>(new[] { 1, 2, 3 });
-            Assert.Throws<ArgumentOutOfRangeException>(() => deque.CopyTo(new int[1], -1));
+            var array = new int[1];
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => deque.CopyTo(array, -1));
+            array.AssertNotCorrupted();
         }
 
         [Fact]
         public void CopyTo_WithIndexEqualToArrayLength_ThrowsException()
         {
             var deque = new Deque<int>(new[] { 1, 2, 3 });
-            Assert.Throws<ArgumentOutOfRangeException>(() => deque.CopyTo(new int[1], 1));
+            var array = new int[1];
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => deque.CopyTo(array, 1));
+            array.AssertNotCorrupted();
         }
 
         [Fact]
         public void CopyTo_WithIndexGreaterThanArrayLength_ThrowsException()
         {
             var deque = new Deque<int>(new[] { 1, 2, 3 });
-            Assert.Throws<ArgumentOutOfRangeException>(() => deque.CopyTo(new int[1], 2));
+            var array = new int[1];
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => deque.CopyTo(array, 2));
+            array.AssertNotCorrupted();
         }
 
         [Fact]
         public void CopyTo_ThrowsException_IfArrayIsntLongEnough()
         {
             var deque = new Deque<int>(new[] { 1, 2, 3 });
-            Assert.Throws<ArgumentException>(() => deque.CopyTo(new int[2], 0));
-            Assert.Throws<ArgumentException>(() => deque.CopyTo(new int[3], 1));
+            var array1 = new int[2];
+            var array2 = new int[3];
+
+            Assert.Throws<ArgumentException>(() => deque.CopyTo(array1, 0));
+            Assert.Throws<ArgumentException>(() => deque.CopyTo(array2, 1));
+
+            array1.AssertNotCorrupted();
+            array2.AssertNotCorrupted();
         }
 
         [Fact]
