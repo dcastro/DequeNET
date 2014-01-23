@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
@@ -115,6 +116,7 @@ namespace DequeNet
             while (true)
             {
                 var anchor = _anchor;
+                anchor.Validate();
 
                 //If the deque is empty
                 if (anchor._right == null)
@@ -161,6 +163,7 @@ namespace DequeNet
             while (true)
             {
                 var anchor = _anchor;
+                anchor.Validate();
 
                 //If the deque is empty
                 if (anchor._left == null)
@@ -208,7 +211,8 @@ namespace DequeNet
             while (true)
             {
                 anchor = _anchor;
-                
+                anchor.Validate();
+
                 if (anchor._right == null)
                 {
                     //return false if the deque is empty
@@ -218,7 +222,7 @@ namespace DequeNet
                 if (anchor._right == anchor._left)
                 {
                     //update both pointers if the deque has only one node
-                    var newAnchor = new Anchor(null, null, DequeStatus.Stable);
+                    var newAnchor = new Anchor();
                     if (Interlocked.CompareExchange(ref _anchor, newAnchor, anchor) == anchor)
                         break;
                 }
@@ -264,6 +268,7 @@ namespace DequeNet
             while (true)
             {
                 anchor = _anchor;
+                anchor.Validate();
 
                 if (anchor._left == null)
                 {
@@ -274,7 +279,7 @@ namespace DequeNet
                 if (anchor._right == anchor._left)
                 {
                     //update both pointers if the deque has only one node
-                    var newAnchor = new Anchor(null, null, DequeStatus.Stable);
+                    var newAnchor = new Anchor();
                     if (Interlocked.CompareExchange(ref _anchor, newAnchor, anchor) == anchor)
                         break;
                 }
@@ -600,7 +605,7 @@ namespace DequeNet
             // We must be careful not to corrupt the array, so we will first accumulate an 
             // internal list of elements that we will then copy to the array. This requires
             // some extra allocation, but is necessary since we don't know up front whether 
-            // the array is sufficiently large to hold the stack's contents.
+            // the array is sufficiently large to hold the deque's contents.
             ((ICollection) ToList()).CopyTo(array, index);
         }
 
@@ -633,7 +638,7 @@ namespace DequeNet
             // We must be careful not to corrupt the array, so we will first accumulate an
             // internal list of elements that we will then copy to the array. This requires
             // some extra allocation, but is necessary since we don't know up front whether 
-            // the array is sufficiently large to hold the stack's contents.
+            // the array is sufficiently large to hold the deque's contents.
             ToList().CopyTo(array, index);
         }
 
@@ -670,6 +675,7 @@ namespace DequeNet
         {
             //try to grab a reference to a stable anchor (fast route)
             Anchor anchor = _anchor;
+            anchor.Validate();
 
             //try to grab a reference to a stable anchor (slow route)
             if (anchor._status != DequeStatus.Stable)
@@ -678,6 +684,8 @@ namespace DequeNet
                 do
                 {
                     anchor = _anchor;
+                    anchor.Validate();
+
                     spinner.SpinOnce();
                 } while (anchor._status != DequeStatus.Stable);
             }
@@ -721,7 +729,7 @@ namespace DequeNet
              * 
              * To do this, we need to traverse the deque from right to left (using a node's left pointer)
              * until we find a node c common to both x->a and y->b paths. Such a node is either:
-             * (a) currently part of the deque* or
+             * (a) currently part of the deque or
              * (b) the last node of the x->a path (i.e., node 'a') or
              * (c) the last node to be popped from the left (if all nodes between 'x' and 'y' were popped from the deque).
              * 
@@ -768,7 +776,7 @@ namespace DequeNet
                     ycPath.Select(node => node._value));
 
             return xySequence.ToList();
-        } 
+        }
 
         internal class Anchor
         {
@@ -787,6 +795,21 @@ namespace DequeNet
                 _left = left;
                 _right = right;
                 _status = status;
+            }
+
+            /// <summary>
+            /// Validates the anchor's state.
+            /// </summary>
+            [Conditional("DEBUG")]
+            public void Validate()
+            {
+                //assert that either both pointers are null or not null
+                Contract.Assert((_left == null && _right == null) ||
+                                (_left != null && _right != null));
+
+                //assert that if the anchor is empty, then it is stable
+                if(_left == null)
+                    Contract.Assert(_status == DequeStatus.Stable);
             }
         }
 
