@@ -274,7 +274,7 @@ namespace DequeNet.Tests.ConcurrentDeque.Internal
                         Interlocked.Add(ref sum, val);
 
                         //start popping
-                        if (sum >= 5000)
+                        if (nodeCount >= 10000)
                             shouldPush = false;
                     }
                     else
@@ -299,7 +299,7 @@ namespace DequeNet.Tests.ConcurrentDeque.Internal
                         }
 
                         //start pushing
-                        if (sum == 0)
+                        if (nodeCount == 0)
                             shouldPush = true;
                     }
                 }

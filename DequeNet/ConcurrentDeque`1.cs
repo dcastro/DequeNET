@@ -376,6 +376,11 @@ namespace DequeNet
 
             //grab a reference to the previous rightmost node and its right pointer
             var prev = newNode._left;
+
+            //quick check to see if the deque has been modified by another thread
+            if (prev == null)
+                return;
+
             var prevNext = prev._right;
 
             //if the previous rightmost node doesn't point to the new rightmost node, we need to update it
@@ -426,6 +431,11 @@ namespace DequeNet
 
             //grab a reference to the previous leftmost node and its left pointer
             var prev = newNode._right;
+
+            //quick check to see if the deque has been modified by another thread
+            if (prev == null)
+                return;
+
             var prevNext = prev._left;
 
             //if the previous leftmost node doesn't point to the new leftmost node, we need to update it
