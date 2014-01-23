@@ -11,6 +11,9 @@ namespace DequeNet
     /// <typeparam name="T">Specifies the type of the elements in the deque.</typeparam>
     public interface IDeque<T> : ICollection<T>, ICollection
     {
+        /// <summary>
+        /// Gets the number of elements contained in the <see cref="IDeque{T}"/>.
+        /// </summary>
         new int Count { get; }
 
         /// <summary>

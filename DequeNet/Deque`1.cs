@@ -454,9 +454,6 @@ namespace DequeNet
         /// <summary>
         /// Gets the number of elements contained in the <see cref="Deque{T}"/>.
         /// </summary>
-        /// <returns>
-        /// The number of elements contained in the <see cref="Deque{T}"/>.
-        /// </returns>
         public int Count { get; private set; }
 
         /// <summary>
@@ -568,6 +565,9 @@ namespace DequeNet
             set { _buffer[VirtualIndexToBufferIndex(index)] = value; }
         }
 
+        /// <summary>
+        /// Supports a simple iteration over a generic <see cref="Deque{T}"/>.
+        /// </summary>
         public struct Enumerator : IEnumerator<T>
         {
             private readonly Deque<T> _deque;
@@ -584,7 +584,16 @@ namespace DequeNet
                 _current = default(T);
                 _virtualIndex = -1;
             }
-
+            
+            /// <summary>
+            /// Advances the enumerator to the next element of the deque.
+            /// </summary>
+            /// <returns>
+            /// true if the enumerator was successfully advanced to the next element; false if the enumerator has passed the end of the deque.
+            /// </returns>
+            /// <exception cref="InvalidOperationException">
+            /// The collection was modified after the enumerator was created.
+            /// </exception>
             public bool MoveNext()
             {
                 Validate();
@@ -597,6 +606,12 @@ namespace DequeNet
                 return true;
             }
 
+            /// <summary>
+            /// Sets the enumerator to its initial position, which is before the first element in the collection.
+            /// </summary>
+            /// <exception cref="InvalidOperationException">
+            /// The collection was modified after the enumerator was created.
+            /// </exception>
             void IEnumerator.Reset()
             {
                 Validate();
@@ -605,6 +620,9 @@ namespace DequeNet
                 _current = default(T);
             }
 
+            /// <summary>
+            /// Gets the element in the <see cref="Deque{T}"/> at the current position of the enumerator.
+            /// </summary>
             public T Current
             {
                 get { return _current; }
@@ -615,6 +633,9 @@ namespace DequeNet
                 get { return Current; }
             }
 
+            /// <summary>
+            /// Releases the enumerator's resources.
+            /// </summary>
             public void Dispose()
             {
             }
