@@ -22,3 +22,11 @@ PeekRight and PeekLeft run in constant time regardless of contention.
 [1] Michael, Maged, 2003, CAS-Based Lock-Free Algorithm for Shared Deques, *Euro-Par 2003 Parallel Processing*, v. 2790, p. 651-660, http://www.research.ibm.com/people/m/michael/europar-2003.pdf (Decembre 22, 2013).
 
 
+### NuGet
+
+To install DequeNET, run the following command in the Package Manager Console
+
+```
+PM> Install-Package DequeNET
+```
+
