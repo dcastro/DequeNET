@@ -222,6 +222,17 @@ namespace DequeNet
             LeftIndex = 0;
             _version++;
         }
+        
+        /// <summary>
+        /// Returns an enumerator that iterates through the deque.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="IEnumerator{T}"/> that can be used to iterate through the deque.
+        /// </returns>
+        public Enumerator GetEnumerator()
+        {
+            return new Enumerator(this);
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through the deque.
@@ -229,9 +240,9 @@ namespace DequeNet
         /// <returns>
         /// A <see cref="IEnumerator{T}"/> that can be used to iterate through the deque.
         /// </returns>
-        public IEnumerator<T> GetEnumerator()
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
-            return new Enumerator(this);
+            return GetEnumerator();
         }
 
         /// <summary>

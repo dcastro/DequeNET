@@ -7,7 +7,7 @@ namespace DequeNet.Tests.Helpers
 {
     internal static class ThreadStartExtensions
     {
-        private const int ThreadTimeout = 500;
+        private const int ThreadTimeout = 1000;
 
         /// <summary>
         /// Executes a given action in a given number of threads.
