@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
@@ -804,12 +803,12 @@ namespace DequeNet
             public void Validate()
             {
                 //assert that either both pointers are null or not null
-                Contract.Assert((_left == null && _right == null) ||
+                Debug.Assert((_left == null && _right == null) ||
                                 (_left != null && _right != null));
 
                 //assert that if the anchor is empty, then it is stable
                 if(_left == null)
-                    Contract.Assert(_status == DequeStatus.Stable);
+                    Debug.Assert(_status == DequeStatus.Stable);
             }
         }
 

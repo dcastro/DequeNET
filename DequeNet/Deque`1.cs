@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using DequeNet.Debugging;
@@ -441,7 +440,7 @@ namespace DequeNet
                 return position.Mod(Capacity);
 
             //if capacity is 0, _leftIndex must always be 0
-            Contract.Assert(_leftIndex == 0);
+            Debug.Assert(_leftIndex == 0);
 
             return 0;
         }
