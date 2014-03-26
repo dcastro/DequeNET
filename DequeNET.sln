@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DequeNet.Tests", "DequeNet.Tests\DequeNet.Tests.csproj", "{2FAA47E4-EB30-4881-B09A-FA772F510036}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DequeNet", "DequeNet\DequeNet.csproj", "{2DE22FD0-E725-4CE8-8EC2-EB23F4DB163E}"
@@ -13,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{04DBFD
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DequeNet.Tests.Common", "DequeNet.Tests.Common\DequeNet.Tests.Common.csproj", "{B5F5A008-234E-4FF4-9746-37C219762E59}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,6 +28,10 @@ Global
 		{2DE22FD0-E725-4CE8-8EC2-EB23F4DB163E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2DE22FD0-E725-4CE8-8EC2-EB23F4DB163E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2DE22FD0-E725-4CE8-8EC2-EB23F4DB163E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5F5A008-234E-4FF4-9746-37C219762E59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5F5A008-234E-4FF4-9746-37C219762E59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5F5A008-234E-4FF4-9746-37C219762E59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5F5A008-234E-4FF4-9746-37C219762E59}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

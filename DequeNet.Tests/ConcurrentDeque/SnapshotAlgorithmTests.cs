@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using DequeNet.Tests.Common;
 using Xunit;
 using Xunit.Extensions;
 using DequeNet.Tests.Helpers;
@@ -70,7 +71,7 @@ namespace DequeNet.Tests.ConcurrentDeque
             Thread[] threads = null;
             Action<ConcurrentDeque<int>> mutationCallback = d =>
                 {
-                    ThreadStart executeOps = () =>
+                    Action executeOps = () =>
                         {
                             var rnd = new Random(Thread.CurrentThread.ManagedThreadId);
 

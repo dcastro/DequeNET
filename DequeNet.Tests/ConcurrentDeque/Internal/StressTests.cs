@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using DequeNet.Tests.Common;
 using DequeNet.Tests.Extensions;
 using DequeNet.Tests.Helpers;
 using Xunit;
@@ -24,7 +25,7 @@ namespace DequeNet.Tests.ConcurrentDeque.Internal
             var deque = new ConcurrentDeque<int>();
 
             //keep adding items to the deque
-            ThreadStart pushRight = () =>
+            Action pushRight = () =>
             {
                 Random rnd = new Random();
                 while (!cancelled)
@@ -55,7 +56,7 @@ namespace DequeNet.Tests.ConcurrentDeque.Internal
             var deque = new ConcurrentDeque<int>();
 
             //keep adding items to the deque
-            ThreadStart pushLeft = () =>
+            Action pushLeft = () =>
             {
                 Random rnd = new Random();
                 while (!cancelled)
@@ -88,7 +89,7 @@ namespace DequeNet.Tests.ConcurrentDeque.Internal
             for (int i = 0; i < initialCount; i++)
                 deque.PushRight(i);
 
-            ThreadStart popRight = () =>
+            Action popRight = () =>
             {
                 while (popCount <= stopAt)
                 {
@@ -121,7 +122,7 @@ namespace DequeNet.Tests.ConcurrentDeque.Internal
             for (int i = 0; i < initialCount; i++)
                 deque.PushLeft(i);
 
-            ThreadStart popLeft = () =>
+            Action popLeft = () =>
             {
                 while (popCount <= stopAt)
                 {
@@ -154,7 +155,7 @@ namespace DequeNet.Tests.ConcurrentDeque.Internal
             long nodeCount = 0;
             bool cancelled = false;
 
-            ThreadStart action = () =>
+            Action action = () =>
             {
                 Random rnd = new Random();
 
@@ -202,7 +203,7 @@ namespace DequeNet.Tests.ConcurrentDeque.Internal
             long nodeCount = 0;
             bool cancelled = false;
 
-            ThreadStart action = () =>
+            Action action = () =>
             {
                 Random rnd = new Random();
 
@@ -256,7 +257,7 @@ namespace DequeNet.Tests.ConcurrentDeque.Internal
             bool cancelled = false;
             bool shouldPush = true;
 
-            ThreadStart action = () =>
+            Action action = () =>
             {
                 Random rnd = new Random();
 
