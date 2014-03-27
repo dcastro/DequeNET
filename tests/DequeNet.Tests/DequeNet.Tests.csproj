@@ -89,7 +89,7 @@
       <Project>{b5f5a008-234e-4ff4-9746-37c219762e59}</Project>
       <Name>DequeNet.Tests.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DequeNet\DequeNet.csproj">
+    <ProjectReference Include="..\..\src\DequeNet\DequeNet.csproj">
       <Project>{2de22fd0-e725-4ce8-8ec2-eb23f4db163e}</Project>
       <Name>DequeNet</Name>
     </ProjectReference>

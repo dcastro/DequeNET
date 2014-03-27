@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DequeNet.Tests", "DequeNet.Tests\DequeNet.Tests.csproj", "{2FAA47E4-EB30-4881-B09A-FA772F510036}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DequeNet.Tests", "tests\DequeNet.Tests\DequeNet.Tests.csproj", "{2FAA47E4-EB30-4881-B09A-FA772F510036}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DequeNet", "DequeNet\DequeNet.csproj", "{2DE22FD0-E725-4CE8-8EC2-EB23F4DB163E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DequeNet", "src\DequeNet\DequeNet.csproj", "{2DE22FD0-E725-4CE8-8EC2-EB23F4DB163E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{04DBFDE8-E87C-422F-BCFC-8507CD5ACB9E}"
 	ProjectSection(SolutionItems) = preProject
@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{04DBFD
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DequeNet.Tests.Common", "DequeNet.Tests.Common\DequeNet.Tests.Common.csproj", "{B5F5A008-234E-4FF4-9746-37C219762E59}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DequeNet.Tests.Common", "tests\DequeNet.Tests.Common\DequeNet.Tests.Common.csproj", "{B5F5A008-234E-4FF4-9746-37C219762E59}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
