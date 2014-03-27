@@ -7,7 +7,7 @@ using Xunit;
 using Xunit.Extensions;
 using Xunit.Sdk;
 
-namespace DequeNet.Tests.Helpers
+namespace DequeNet.Tests.Common
 {
     /// <summary>
     /// Marks a test method to be executed a given number of times.

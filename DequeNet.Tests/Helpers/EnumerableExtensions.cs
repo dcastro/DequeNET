@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DequeNet.Tests.Helpers
 {
@@ -21,6 +22,20 @@ namespace DequeNet.Tests.Helpers
                 sum += i;
 
             return sum;
+        }
+        
+        /// <summary>
+        /// Determines whether all elements of a sequence are set to the default value of <see cref="T"/>.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="array"></param>
+        /// <returns></returns>
+        public static bool AllDefault<T>(this IEnumerable<T> array)
+        {
+            var comparer = EqualityComparer<T>.Default;
+            var defaultValue = default(T);
+
+            return array.All(item => comparer.Equals(item, defaultValue));
         }
     }
 }

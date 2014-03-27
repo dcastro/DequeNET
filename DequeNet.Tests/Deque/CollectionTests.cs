@@ -20,7 +20,7 @@ namespace DequeNet.Tests.Deque
             var ex = Assert.Throws<ArgumentException>(() => deque.CopyTo(array, 0));
             Assert.Contains("dimension", ex.Message, StringComparison.InvariantCultureIgnoreCase);
 
-            array.AssertNotCorrupted<int>();
+            Assert.True(array.AllDefault<int>());
         }
 
         [Fact]
@@ -32,7 +32,7 @@ namespace DequeNet.Tests.Deque
             var ex = Assert.Throws<ArgumentException>(() => deque.CopyTo(array, 0));
             Assert.Contains("array type", ex.Message, StringComparison.InvariantCultureIgnoreCase);
 
-            array.AssertNotCorrupted();
+            Assert.True(array.AllDefault());
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace DequeNet.Tests.Deque
             var array = new int[1];
 
             Assert.Throws<ArgumentOutOfRangeException>(() => deque.CopyTo(array, -1));
-            array.AssertNotCorrupted();
+            Assert.True(array.AllDefault());
         }
 
         [Fact]
@@ -59,7 +59,7 @@ namespace DequeNet.Tests.Deque
             var array = new int[1];
 
             Assert.Throws<ArgumentOutOfRangeException>(() => deque.CopyTo(array, 1));
-            array.AssertNotCorrupted();
+            Assert.True(array.AllDefault());
         }
 
         [Fact]
@@ -69,7 +69,7 @@ namespace DequeNet.Tests.Deque
             var array = new int[1];
 
             Assert.Throws<ArgumentOutOfRangeException>(() => deque.CopyTo(array, 2));
-            array.AssertNotCorrupted();
+            Assert.True(array.AllDefault());
         }
 
         [Fact]
@@ -82,8 +82,8 @@ namespace DequeNet.Tests.Deque
             Assert.Throws<ArgumentException>(() => deque.CopyTo(array1, 0));
             Assert.Throws<ArgumentException>(() => deque.CopyTo(array2, 1));
 
-            array1.AssertNotCorrupted();
-            array2.AssertNotCorrupted();
+            Assert.True(array1.AllDefault());
+            Assert.True(array2.AllDefault());
         }
 
         [Fact]

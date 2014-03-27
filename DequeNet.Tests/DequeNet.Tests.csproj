@@ -78,7 +78,6 @@
     <Compile Include="Helpers\ConcurrentDequeExtensions.cs" />
     <Compile Include="Helpers\EnumerableExtensions.cs" />
     <Compile Include="Extensions\IntExtensionsTests.cs" />
-    <Compile Include="Helpers\RepeatTestAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ConcurrentDeque\SnapshotAlgorithmTests.cs" />
   </ItemGroup>
