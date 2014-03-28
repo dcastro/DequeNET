@@ -20,6 +20,10 @@ namespace DequeNet.Tests.Perf
         {
         }
 
+        public void Complete()
+        {
+        }
+
         public void PrintCounters()
         {
         }

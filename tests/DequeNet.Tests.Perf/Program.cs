@@ -22,24 +22,41 @@ namespace DequeNet.Tests.Perf
 
             using (var countersContainer = CreateContainer(args))
             {
+                //action to be executed by each thread - concurrently mutate the deque
                 Action action = () =>
                     {
-                        var rnd = new Random(Thread.CurrentThread.ManagedThreadId);
+                        int i = 0;
+                        int poppedValue;
 
                         while (!cancelled)
                         {
-                            PerformRandomAction(deque, rnd);
+                            //pop from/push onto the deque
+                            i++;
+                            if (i % 4 == 0)
+                                deque.PushLeft(1);
+                            else if (i % 3 == 0)
+                                deque.PushRight(1);
+                            else if (i % 2 == 0)
+                                deque.TryPopLeft(out poppedValue);
+                            else
+                                deque.TryPopRight(out poppedValue);
+
+                            //increment counters
                             countersContainer.Increment();
                         }
+
+                        countersContainer.Complete();
                     };
 
                 Action cancel = () =>
                     {   
                         cancelled = true;
-                        countersContainer.PrintCounters();
                     };
 
+                //launch a set of threads to mutate the deque concurrently
                 action.RunInParallel(cancel, ThreadCount, RunningTime);
+
+                countersContainer.PrintCounters();
             }
         }
 
@@ -54,28 +71,6 @@ namespace DequeNet.Tests.Perf
                 return new PerfCountersContainer();
 
             return new NullCountersContainer();
-        }
-
-        private static void PerformRandomAction(IConcurrentDeque<int> deque, Random rnd)
-        {
-            int randomOp = rnd.Next(4);
-            int poppedValue;
-
-            switch (randomOp)
-            {
-                case 0:
-                    deque.PushLeft(1);
-                    break;
-                case 1:
-                    deque.PushRight(1);
-                    break;
-                case 2:
-                    deque.TryPopLeft(out poppedValue);
-                    break;
-                case 3:
-                    deque.TryPopRight(out poppedValue);
-                    break;
-            }
         }
     }
 }

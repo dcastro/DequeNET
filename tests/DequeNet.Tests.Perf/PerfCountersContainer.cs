@@ -68,12 +68,27 @@ namespace DequeNet.Tests.Perf
                 counter.Dispose();
         }
 
+        /// <summary>
+        /// Increment every counter in the container
+        /// </summary>
         public void Increment()
         {
             foreach (var counter in _initialSamples.Keys)
                 counter.Increment();
         }
 
+        /// <summary>
+        /// Signals the container that the current thread has finished incrementing the counters.
+        /// Should be called exactly once by each thread incrementing the counters.
+        /// </summary>
+        public void Complete()
+        {
+        }
+
+        /// <summary>
+        /// Print the counters values to the console.
+        /// Should only be called after each thread incrementing the counters has called <see cref="IPerfCountersContainer.Complete"/>.
+        /// </summary>
         public void PrintCounters()
         {
             foreach (var entry in _initialSamples)
