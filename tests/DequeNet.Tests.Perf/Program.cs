@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -11,25 +12,40 @@ namespace DequeNet.Tests.Perf
 {
     public static class Program
     {
-        private const int RunningTime = 5000;
+        private const int RunningTime = 7000;
         private const int ThreadCount = 4;
 
         public static void Main(string[] args)
         {
+            bool useCounters = args.Any(arg => arg == "--with-perf-counters" ||
+                                               arg == "-wpf");
+
             var deque = new ConcurrentDeque<int>(Enumerable.Repeat(1, 100000));
             bool cancelled = false;
 
-            Action action = () =>
-                {
-                    var rnd = new Random(Thread.CurrentThread.ManagedThreadId);
-
-                    while (!cancelled)
+            using (var countersContainer = useCounters
+                                               ? new PerfCountersContainer() as IPerfCountersContainer
+                                               : new NullCountersContainer())
+            {
+                Action action = () =>
                     {
-                        PerformRandomAction(deque, rnd);
-                    }
-                };
+                        var rnd = new Random(Thread.CurrentThread.ManagedThreadId);
 
-            action.RunInParallel(() => cancelled = true, ThreadCount, RunningTime);
+                        while (!cancelled)
+                        {
+                            PerformRandomAction(deque, rnd);
+                            countersContainer.Increment();
+                        }
+                    };
+
+                Action cancel = () =>
+                    {
+                        cancelled = true;
+                        countersContainer.PrintCounters();
+                    };
+
+                action.RunInParallel(cancel, ThreadCount, RunningTime);
+            }
         }
 
         private static void PerformRandomAction(IConcurrentDeque<int> deque, Random rnd)
