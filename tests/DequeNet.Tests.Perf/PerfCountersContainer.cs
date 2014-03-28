@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace DequeNet.Tests.Perf
 {
+    /// <summary>
+    /// Counts the number of operations performed per second, as well and the total number of operations performed.
+    /// Wraps around <see cref="PerformanceCounter"/>.
+    /// </summary>
     internal class PerfCountersContainer : IPerfCountersContainer
     {
         private const string CountersCategory = "Concurrent Deque";
@@ -82,8 +86,6 @@ namespace DequeNet.Tests.Perf
 
                 Console.WriteLine("{0,-20} {1,-30}", counter.CounterName, counterValue.ToString("N0"));
             }
-
-            Console.ReadLine();
         }
     }
 }

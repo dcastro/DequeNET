@@ -17,15 +17,10 @@ namespace DequeNet.Tests.Perf
 
         public static void Main(string[] args)
         {
-            bool useCounters = args.Any(arg => arg == "--with-perf-counters" ||
-                                               arg == "-wpf");
-
             var deque = new ConcurrentDeque<int>(Enumerable.Repeat(1, 100000));
             bool cancelled = false;
 
-            using (var countersContainer = useCounters
-                                               ? new PerfCountersContainer() as IPerfCountersContainer
-                                               : new NullCountersContainer())
+            using (var countersContainer = CreateContainer(args))
             {
                 Action action = () =>
                     {
@@ -39,13 +34,26 @@ namespace DequeNet.Tests.Perf
                     };
 
                 Action cancel = () =>
-                    {
+                    {   
                         cancelled = true;
                         countersContainer.PrintCounters();
                     };
 
                 action.RunInParallel(cancel, ThreadCount, RunningTime);
             }
+        }
+
+        private static IPerfCountersContainer CreateContainer(string[] args)
+        {
+            if (args.Any(arg => arg == "--with-slim-counters" ||
+                                arg == "-wsc"))
+                return new SlimPerfCountersContainer();
+
+            if (args.Any(arg => arg == "--with-perf-counters" ||
+                                arg == "-wpc"))
+                return new PerfCountersContainer();
+
+            return new NullCountersContainer();
         }
 
         private static void PerformRandomAction(IConcurrentDeque<int> deque, Random rnd)

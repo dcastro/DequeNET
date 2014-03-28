@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace DequeNet.Tests.Perf
 {
+    /// <summary>
+    /// Swallows every method call.
+    /// Use this when you don't want to use perf counters and avoid their overhead.
+    /// </summary>
     internal class NullCountersContainer : IPerfCountersContainer
     {
         public void Dispose()

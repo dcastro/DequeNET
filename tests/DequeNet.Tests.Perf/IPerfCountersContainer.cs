@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DequeNet.Tests.Perf
 {
+    /// <summary>
+    /// Counts the number of operations performed per second, as well and the total number of operations performed.
+    /// </summary>
     internal interface IPerfCountersContainer : IDisposable
     {
         void Increment();
