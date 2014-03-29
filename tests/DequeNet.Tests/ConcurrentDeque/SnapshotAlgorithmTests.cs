@@ -5,7 +5,6 @@ using System.Threading;
 using DequeNet.Tests.Common;
 using Xunit;
 using Xunit.Extensions;
-using DequeNet.Tests.Helpers;
 
 namespace DequeNet.Tests.ConcurrentDeque
 {

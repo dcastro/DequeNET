@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading;
 using DequeNet.Tests.Common;
-using DequeNet.Tests.Extensions;
 using DequeNet.Tests.Helpers;
 using Xunit;
 

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Extensions;
 
@@ -104,7 +101,7 @@ namespace DequeNet.Tests.Deque
                         new object[] {new int[] {}},
                         new object[] {new[] {1}},
                         new object[] {new[] {1, 2, 3}},
-                        new object[] {new[] {1, 2, 3, 4}},
+                        new object[] {new[] {1, 2, 3, 4}}
                     };
             }
         }

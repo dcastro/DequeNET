@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using Xunit;
+﻿using Xunit;
 
 namespace DequeNet.Tests.ConcurrentDeque
 {

@@ -54,10 +54,7 @@ namespace DequeNet
             if(capacity < 0)
                 throw new ArgumentOutOfRangeException("capacity", "capacity was less than zero.");
 
-            if (capacity == 0)
-                _buffer = EmptyBuffer;
-            else
-                _buffer = new T[capacity];
+            _buffer = capacity == 0 ? EmptyBuffer : new T[capacity];
         }
 
         /// <summary>
@@ -72,26 +69,20 @@ namespace DequeNet
             InitializeFromCollection(collection);
         }
 
-        private void InitializeFromCollection(IEnumerable<T> collection)
+        private void InitializeFromCollection(IEnumerable<T> enumerable)
         {
-            var capacity = collection.Count();
-            if (capacity == 0)
+            var collection = enumerable as ICollection<T> ?? enumerable.ToArray();
+
+            var count = collection.Count;
+
+            //initialize buffer
+            if (count == 0)
                 _buffer = EmptyBuffer;
             else
             {
-                _buffer = new T[capacity];
-
-                //copy to array
-                if (collection is ICollection<T>)
-                {
-                    (collection as ICollection<T>).CopyTo(_buffer, 0);
-                    Count = capacity;
-                }
-                else
-                {
-                    foreach (var item in collection)
-                        PushRight(item);
-                }
+                _buffer = new T[count];
+                collection.CopyTo(_buffer, 0);
+                Count = count;
             }
         }
 
@@ -340,7 +331,7 @@ namespace DequeNet
         /// <param name="item">The object to locate in the <see cref="Deque{T}"/>.</param>
         public bool Contains(T item)
         {
-            return Enumerable.Contains(this, item, EqualityComparer<T>.Default);
+            return this.Contains(item, EqualityComparer<T>.Default);
         }
 
         /// <summary>
