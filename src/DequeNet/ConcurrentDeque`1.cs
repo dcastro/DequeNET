@@ -110,6 +110,7 @@ namespace DequeNet
         public void PushRight(T item)
         {
             var newNode = new Node(item);
+            var spinner = new SpinWait();
 
             while (true)
             {
@@ -147,6 +148,8 @@ namespace DequeNet
                     //attempt to bring it to a stable state before trying to insert the node.
                     Stabilize(anchor);
                 }
+
+                spinner.SpinOnce();
             }
         }
 
@@ -157,6 +160,7 @@ namespace DequeNet
         public void PushLeft(T item)
         {
             var newNode = new Node(item);
+            var spinner = new SpinWait();
 
             while (true)
             {
@@ -194,6 +198,8 @@ namespace DequeNet
                     //attempt to bring it to a stable state before trying to insert the node.
                     Stabilize(anchor);
                 }
+
+                spinner.SpinOnce();
             }
         }
 
@@ -206,6 +212,8 @@ namespace DequeNet
         public bool TryPopRight(out T item)
         {
             Anchor anchor;
+            var spinner = new SpinWait();
+
             while (true)
             {
                 anchor = _anchor;
@@ -238,6 +246,8 @@ namespace DequeNet
                     //attempt to bring it to a stable state before trying to remove the node.
                     Stabilize(anchor);
                 }
+
+                spinner.SpinOnce();
             }
 
             var node = anchor._right;
@@ -263,6 +273,8 @@ namespace DequeNet
         public bool TryPopLeft(out T item)
         {
             Anchor anchor;
+            var spinner = new SpinWait();
+
             while (true)
             {
                 anchor = _anchor;
@@ -295,6 +307,8 @@ namespace DequeNet
                     //attempt to bring it to a stable state before trying to remove the node.
                     Stabilize(anchor);
                 }
+
+                spinner.SpinOnce();
             }
 
             var node = anchor._left;
