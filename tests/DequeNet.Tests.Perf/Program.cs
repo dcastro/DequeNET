@@ -12,15 +12,22 @@ namespace DequeNet.Tests.Perf
 {
     public static class Program
     {
-        private const int RunningTime = 7000;
-        private const int ThreadCount = 4;
+        private static int _runningTime;
+        private static int _threadCount;
 
         public static void Main(string[] args)
         {
+            var options = new Options();
             var deque = new ConcurrentDeque<int>(Enumerable.Repeat(1, 100000));
             bool cancelled = false;
 
-            using (var countersContainer = CreateContainer(args))
+            //parse arguments
+            if (!CommandLine.Parser.Default.ParseArgumentsStrict(args, options))
+                return;
+
+            Setup(options);
+
+            using (var countersContainer = CreateContainer(options))
             {
                 //action to be executed by each thread - concurrently mutate the deque
                 Action action = () =>
@@ -54,23 +61,27 @@ namespace DequeNet.Tests.Perf
                     };
 
                 //launch a set of threads to mutate the deque concurrently
-                action.RunInParallel(cancel, ThreadCount, RunningTime);
+                action.RunInParallel(cancel, _threadCount, _runningTime);
 
                 countersContainer.PrintCounters();
             }
         }
 
-        private static IPerfCountersContainer CreateContainer(string[] args)
+        private static IPerfCountersContainer CreateContainer(Options options)
         {
-            if (args.Any(arg => arg == "--with-slim-counters" ||
-                                arg == "-wsc"))
+            if (options.UseSlimCounters)
                 return new SlimPerfCountersContainer();
 
-            if (args.Any(arg => arg == "--with-perf-counters" ||
-                                arg == "-wpc"))
+            if (options.UsePerfCounters)
                 return new PerfCountersContainer();
 
             return new NullCountersContainer();
+        }
+
+        private static void Setup(Options options)
+        {
+            _runningTime = options.RunningTime;
+            _threadCount = options.Threads;
         }
     }
 }
