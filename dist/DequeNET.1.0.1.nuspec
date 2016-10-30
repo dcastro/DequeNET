@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>DequeNET</id>
+        <version>1.0.1</version>
+        <title>DequeNET</title>
+        <authors>DCastro</authors>
+        <owners>DCastro</owners>
+        <licenseUrl>https://github.com/dcastro/DequeNET/blob/master/LICENSE.txt</licenseUrl>
+        <projectUrl>https://github.com/dcastro/DequeNET</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>DequeNET (pronounced Deck Net) provides a concurrent lock-free deque C# implementation. A deque, or double-ended queue, is a data structure that allows insertion and removal of items on both ends. ConcurrentDeque&lt;T&gt; supports 6 operations in constant time O(1): PushRight, PopRight, PeekRight, PushLeft, PopLeft and PeekLeft.
+
+The library also offers a simpler Deque&lt;T&gt; (not thread safe), implemented as a ring buffer. This implementation allows Pop and Peek operations to run in O(1) time and Push operations in amortized O(1) time.</description>
+        <summary>A concurrent lock-free double ended queue (ConcurrentDeque&lt;T&gt;) and a simpler non-concurrent deque (Deque&lt;T&gt;).</summary>
+        <releaseNotes>- Performance improvements</releaseNotes>
+        <copyright>© 2013 Diogo Castro</copyright>
+        <tags>deque double-ended-queue concurrent lock-free producer consumer collection</tags>
+    </metadata>
+    <files>
+        <file src="..\bin\DequeNet.dll" target="lib\netstandard1.1\DequeNet.dll" />
+        <file src="..\bin\DequeNet.pdb" target="lib\netstandard1.1\DequeNet.pdb" />
+        <file src="..\bin\DequeNet.XML" target="lib\netstandard1.1\DequeNet.XML" />
+    </files>
+</package>
