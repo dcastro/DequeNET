@@ -1,0 +1,12 @@
+﻿{
+  "dependencies": {
+    "xunit": "1.9.2",
+    "xunit.extensions": "1.9.2"
+  },
+  "frameworks": {
+    "net45": {}
+  },
+  "runtimes": {
+    "win": {}
+  }
+}
