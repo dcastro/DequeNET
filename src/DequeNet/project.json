@@ -1,10 +1,34 @@
 ﻿{
   "supports": {},
+  "version": "1.0.2",
+  "authors": ["DCastro"],
+  "copyright": "© 2013 Diogo Castro",
+  "title": "DequeNET",
+    "description": "DequeNET (pronounced Deck Net) provides a concurrent lock-free deque C# implementation. A deque, or double-ended queue, is a data structure that allows insertion and removal of items on both ends. ConcurrentDeque<T> supports 6 operations in constant time O(1): PushRight, PopRight, PeekRight, PushLeft, PopLeft and PeekLeft.
+
+The library also offers a simpler Deque<T> (not thread safe), implemented as a ring buffer. This implementation allows Pop and Peek operations to run in O(1) time and Push operations in amortized O(1) time.",
+
   "dependencies": {
     "Microsoft.NETCore.Portable.Compatibility": "1.0.1",
     "NETStandard.Library": "1.6.0"
   },
+
   "frameworks": {
     "netstandard1.1": {}
+  },
+
+  "packOptions" : {
+    "id": "DequeNET",
+    "owners": ["DCastro"],
+    "licenseUrl": "https://github.com/dcastro/DequeNET/blob/master/LICENSE.txt",
+    "projectUrl": "https://github.com/dcastro/DequeNET",
+    "requireLicenseAcceptance": "false",
+    "summary": "A concurrent lock-free double ended queue (ConcurrentDeque<T>) and a simpler non-concurrent deque (Deque<T>).",
+    "releaseNotes": "https://github.com/dcastro/DequeNET/releases",
+    "tags": ["deque", "double-ended-queue", "concurrent", "lock-free", "producer", "consumer", "collection"],
+
+    "repository": {
+        "url": "https://github.com/dcastro/DequeNET"
+    }
   }
 }
